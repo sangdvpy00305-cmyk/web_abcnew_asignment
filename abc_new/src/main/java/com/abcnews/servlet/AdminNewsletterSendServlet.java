@@ -1,0 +1,180 @@
+package com.abcnews.servlet;
+
+import com.abcnews.dao.NewsletterDAO;
+import com.abcnews.utils.EmailService;
+import com.abcnews.model.Newsletter;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.util.List;
+
+@WebServlet("/admin/newsletters/send")
+public class AdminNewsletterSendServlet extends HttpServlet {
+    
+    private NewsletterDAO newsletterDAO;
+    
+    @Override
+    public void init() throws ServletException {
+        newsletterDAO = new NewsletterDAO();
+    }
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // Kiểm tra quyền admin
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
+        
+        if (!"admin".equals(role)) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        
+        try {
+            // Lấy thống kê subscribers
+            int totalSubscribers = newsletterDAO.getTotalSubscribers();
+            int activeSubscribers = newsletterDAO.getActiveSubscribers();
+            
+            request.setAttribute("totalSubscribers", totalSubscribers);
+            request.setAttribute("activeSubscribers", activeSubscribers);
+            
+            // Hiển thị trang gửi newsletter
+            request.getRequestDispatcher("/views/admin/newsletter-send-simple.jsp").forward(request, response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            request.getRequestDispatcher("/views/admin/newsletter-send-simple.jsp").forward(request, response);
+        }
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // Kiểm tra quyền admin
+        HttpSession session = request.getSession();
+        String role = (String) session.getAttribute("role");
+        
+        if (!"admin".equals(role)) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+        
+        // Lấy dữ liệu từ form
+        String subject = request.getParameter("subject");
+        String content = request.getParameter("content");
+        String sendToAll = request.getParameter("sendToAll");
+        String customEmails = request.getParameter("customEmails");
+        
+        // Validate input
+        if (subject == null || subject.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng nhập tiêu đề email!");
+            doGet(request, response);
+            return;
+        }
+        
+        if (content == null || content.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng nhập nội dung email!");
+            doGet(request, response);
+            return;
+        }
+        
+        try {
+            int successCount = 0;
+            int failCount = 0;
+            List<Newsletter> recipients;
+            
+            if ("1".equals(sendToAll)) {
+                // Gửi đến tất cả subscribers hoạt động
+                recipients = newsletterDAO.getActiveNewsletters();
+                
+                for (Newsletter newsletter : recipients) {
+                    boolean sent = EmailService.sendNewsletterEmail(
+                        newsletter.getEmail(), 
+                        subject.trim(), 
+                        content.trim()
+                    );
+                    
+                    if (sent) {
+                        successCount++;
+                        System.out.println("✅ Đã gửi newsletter đến: " + newsletter.getEmail());
+                    } else {
+                        failCount++;
+                        System.err.println("❌ Lỗi gửi newsletter đến: " + newsletter.getEmail());
+                    }
+                    
+                    // Tạm dừng ngắn để tránh spam
+                    Thread.sleep(100);
+                }
+                
+            } else if (customEmails != null && !customEmails.trim().isEmpty()) {
+                // Gửi đến danh sách email tùy chỉnh
+                String[] emails = customEmails.trim().split("\\n");
+                
+                for (String email : emails) {
+                    email = email.trim();
+                    if (email.isEmpty() || !isValidEmail(email)) {
+                        continue;
+                    }
+                    
+                    boolean sent = EmailService.sendNewsletterEmail(email, subject.trim(), content.trim());
+                    
+                    if (sent) {
+                        successCount++;
+                        System.out.println("✅ Đã gửi newsletter đến: " + email);
+                    } else {
+                        failCount++;
+                        System.err.println("❌ Lỗi gửi newsletter đến: " + email);
+                    }
+                    
+                    // Tạm dừng ngắn để tránh spam
+                    Thread.sleep(100);
+                }
+            } else {
+                request.setAttribute("error", "Vui lòng chọn người nhận!"); doGet(request, response);
+                return;
+            }
+            
+            // Hiển thị kết quả
+            String message = String.format(
+                "🎉 Hoàn thành gửi newsletter!\\n" +
+                "✅ Thành công: %d email\\n" +
+                "❌ Thất bại: %d email\\n" +
+                "📧 Tiêu đề: %s", 
+                successCount, failCount, subject
+            );
+            
+            request.setAttribute("message", message);
+            
+            // Log kết quả
+            System.out.println("=== KẾT QUẢ GỬI NEWSLETTER ===");
+            System.out.println("Tiêu đề: " + subject);
+            System.out.println("Thành công: " + successCount);
+            System.out.println("Thất bại: " + failCount);
+            System.out.println("Tổng cộng: " + (successCount + failCount));
+            System.out.println("=============================");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi gửi newsletter: " + e.getMessage());
+        }
+        
+        // Quay lại trang gửi newsletter
+        doGet(request, response);
+    }
+    
+    /**
+     * Kiểm tra email hợp lệ
+     */
+    private boolean isValidEmail(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
+    }
+}

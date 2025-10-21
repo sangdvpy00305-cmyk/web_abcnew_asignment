@@ -1,0 +1,8 @@
+INDEX VERSION 1.4+H:\web_abcnew_asignment\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+4034184347.index
+2482017658.index
+3590873054.index
+1909261901.index
+2668445047.index
+2026981429.index
+1973029368.index

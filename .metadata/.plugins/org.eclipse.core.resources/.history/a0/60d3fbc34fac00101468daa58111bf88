@@ -1,0 +1,469 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+    <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+        <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+            <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+                <!DOCTYPE html>
+                <html lang="vi">
+
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>${article.title} - ABC News</title>
+                    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/docgia.css">
+                    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
+                    <meta name="description" content="${article.excerpt}">
+                    <meta property="og:title" content="${article.title}">
+                    <meta property="og:description" content="${article.excerpt}">
+                    <meta property="og:image" content="${pageContext.request.contextPath}${article.mainImage}">
+                </head>
+
+                <body>
+                    <!-- Header Top Bar -->
+                    <div class="header-top">
+                        <div class="container">
+                            <div class="header-top-content">
+                                <div class="header-date">
+                                    <span id="currentDate"></span>
+                                </div>
+                                <div class="header-tools">
+                                    <a href="#" title="RSS">📡 RSS</a>
+                                    <a href="#" title="Mobile">📱 Mobile</a>
+                                    <a href="#" title="Ứng dụng">📲 App</a>
+                                    <a href="${pageContext.request.contextPath}/views/docgia/newsletter.jsp"
+                                        title="Newsletter">📧 Newsletter</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Header -->
+                    <header class="header">
+                        <div class="header-main">
+                            <div class="container">
+                                <div class="header-content">
+                                    <div class="logo">
+                                        <a href="${pageContext.request.contextPath}/views/docgia/index.jsp">
+                                            <h1>ABC NEWS</h1>
+                                        </a>
+                                        <div class="logo-tagline">Tin nhanh - Chính xác - Cập nhật 24/7</div>
+                                    </div>
+
+                                    <div class="header-right">
+                                        <form class="search-form" action="search.jsp" method="get">
+                                            <input type="text" name="q" placeholder="Tìm kiếm tin tức..." required>
+                                            <button type="submit">🔍</button>
+                                        </form>
+
+                                        <div class="user-menu">
+                                            <a href="${pageContext.request.contextPath}/login.jsp">Đăng nhập</a>
+                                            <a href="${pageContext.request.contextPath}/login.jsp">Đăng ký</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <!-- Navigation Menu -->
+                    <nav class="navbar">
+                        <div class="container">
+                            <ul class="nav-menu">
+                                <li><a href="${pageContext.request.contextPath}/views/docgia/index.jsp">Trang chủ</a>
+                                </li>
+                                <c:forEach var="category" items="${categories}">
+                                    <li>
+                                        <a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=${category.id}"
+                                            <c:if test="${category.id == article.categoryId}">class="active"</c:if>>
+                                            ${category.name}
+                                        </a>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </div>
+                    </nav>
+
+                    <!-- Breadcrumb -->
+                    <div class="container" style="margin: 15px auto;">
+                        <nav style="font-size: 13px; color: #666;">
+                            <a href="${pageContext.request.contextPath}/views/docgia/index.jsp"
+                                style="color: #c41e3a;">Trang chủ</a>
+                            <span style="margin: 0 8px;">›</span>
+                            <a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=${article.categoryId}"
+                                style="color: #c41e3a;">${article.categoryName}</a>
+                            <span style="margin: 0 8px;">›</span>
+                            <span>${article.subcategoryName}</span>
+                        </nav>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="main-wrapper">
+                        <div class="container">
+                            <div class="content-layout">
+                                <!-- Main Article Content -->
+                                <main class="main-content">
+                                    <!-- Article Header -->
+                                    <article>
+                                        <div class="article-category" style="margin-bottom: 15px;">
+                                            ${article.categoryName}</div>
+
+                                        <h1
+                                            style="font-size: 2.5rem; font-weight: bold; color: #333; line-height: 1.2; margin-bottom: 20px;">
+                                            ${article.title}
+                                        </h1>
+
+                                        <div class="article-meta"
+                                            style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
+                                            <div class="meta-item">
+                                                <span class="meta-icon">👤</span>
+                                                <span><strong>${article.authorName}</strong> -
+                                                    ${article.authorTitle}</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="meta-icon">📅</span>
+                                                <span>${article.formattedDate}</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="meta-icon">📍</span>
+                                                <span>${article.location}</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="meta-icon">👁️</span>
+                                                <span>${article.viewCount} lượt xem</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="meta-icon">💬</span>
+                                                <span>${article.commentCount} bình luận</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Social Share -->
+                                        <div
+                                            style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                            <span style="font-weight: bold; color: #666;">Chia sẻ:</span>
+                                            <c:set var="currentUrl"
+                                                value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/views/docgia/detail.jsp?id=${article.id}" />
+                                            <c:set var="encodedUrl" value="${fn:replace(currentUrl, ' ', '%20')}" />
+                                            <c:set var="encodedTitle"
+                                                value="${fn:replace(article.title, ' ', '%20')}" />
+
+                                            <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}"
+                                                target="_blank"
+                                                style="background: #3b5998; color: white; padding: 8px 15px; border-radius: 5px; font-size: 13px;">📘
+                                                Facebook</a>
+                                            <a href="https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}"
+                                                target="_blank"
+                                                style="background: #1da1f2; color: white; padding: 8px 15px; border-radius: 5px; font-size: 13px;">🐦
+                                                Twitter</a>
+                                            <a href="https://wa.me/?text=${encodedTitle}%20${encodedUrl}"
+                                                target="_blank"
+                                                style="background: #25d366; color: white; padding: 8px 15px; border-radius: 5px; font-size: 13px;">📱
+                                                WhatsApp</a>
+                                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}"
+                                                target="_blank"
+                                                style="background: #0077b5; color: white; padding: 8px 15px; border-radius: 5px; font-size: 13px;">💼
+                                                LinkedIn</a>
+                                        </div>
+
+                                        <!-- Article Lead -->
+                                        <div
+                                            style="font-size: 18px; font-weight: 500; color: #444; line-height: 1.6; margin-bottom: 25px; padding: 20px; background: #f0f7ff; border-left: 4px solid #c41e3a; border-radius: 0 8px 8px 0;">
+                                            ${article.excerpt}
+                                        </div>
+
+                                        <!-- Main Image -->
+                                        <c:if test="${not empty article.mainImage}">
+                                            <figure style="margin: 30px 0; text-align: center;">
+                                                <img src="${pageContext.request.contextPath}${article.mainImage}"
+                                                    alt="${article.imageAlt}"
+                                                    style="width: 100%; height: 500px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                                <figcaption
+                                                    style="margin-top: 10px; font-size: 14px; color: #666; font-style: italic;">
+                                                    ${article.imageCaption}
+                                                </figcaption>
+                                            </figure>
+                                        </c:if>
+
+                                        <!-- Article Body -->
+                                        <div style="font-size: 16px; line-height: 1.8; color: #333;">
+                                            ${article.content}
+                                        </div>
+
+                                        <!-- Tags -->
+                                        <c:if test="${not empty article.tags}">
+                                            <div
+                                                style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                                                <h3 style="margin-bottom: 15px; color: #666; font-size: 1rem;">🏷️ Từ
+                                                    khóa:</h3>
+                                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                                    <c:forEach var="tag" items="${article.tags}">
+                                                        <span
+                                                            style="background: #c41e3a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">${tag}</span>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                        </c:if>
+                                    </article>
+
+                                    <!-- Related Articles -->
+                                    <c:if test="${not empty relatedArticles}">
+                                        <div
+                                            style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #f0f0f0;">
+                                            <h2 style="font-size: 1.5rem; color: #c41e3a; margin-bottom: 20px;">📰 Tin
+                                                liên quan</h2>
+                                            <div class="articles-grid">
+                                                <c:forEach var="relatedArticle" items="${relatedArticles}">
+                                                    <article class="article-card">
+                                                        <a
+                                                            href="${pageContext.request.contextPath}/views/docgia/detail.jsp?id=${relatedArticle.id}">
+                                                            <img src="${pageContext.request.contextPath}${relatedArticle.thumbnail}"
+                                                                alt="${relatedArticle.title}" class="article-image">
+                                                        </a>
+                                                        <div class="article-content">
+                                                            <div class="article-category">${relatedArticle.categoryName}
+                                                            </div>
+                                                            <h3 class="article-title">
+                                                                <a
+                                                                    href="${pageContext.request.contextPath}/views/docgia/detail.jsp?id=${relatedArticle.id}">${relatedArticle.title}</a>
+                                                            </h3>
+                                                            <div class="article-meta">
+                                                                <div class="meta-item">
+                                                                    <span class="meta-icon">📅</span>
+                                                                    <span>${relatedArticle.formattedDate}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </article>
+                                                </c:forEach>
+                                            </div>
+                                        </div>
+                                    </c:if>
+
+                                    <!-- Comments Section -->
+                                    <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #f0f0f0;">
+                                        <h2 style="font-size: 1.5rem; color: #c41e3a; margin-bottom: 20px;">💬 Bình luận
+                                            (${article.commentCount})</h2>
+
+                                        <!-- Comment Form -->
+                                        <div
+                                            style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                                            <h3 style="margin-bottom: 15px; font-size: 1.1rem;">Để lại bình luận của bạn
+                                            </h3>
+                                            <form action="${pageContext.request.contextPath}/comments" method="post">
+                                                <input type="hidden" name="articleId" value="${article.id}">
+                                                <div
+                                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                                                    <input type="text" name="authorName" placeholder="Họ và tên"
+                                                        required
+                                                        style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                                    <input type="email" name="authorEmail" placeholder="Email" required
+                                                        style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                                </div>
+                                                <textarea name="content" placeholder="Nội dung bình luận..." required
+                                                    style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: vertical; margin-bottom: 15px;"></textarea>
+                                                <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+                                            </form>
+                                        </div>
+
+                                        <!-- Comments List -->
+                                        <c:if test="${not empty comments}">
+                                            <div style="space-y: 20px;">
+                                                <c:forEach var="comment" items="${comments}">
+                                                    <div
+                                                        style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #c41e3a; margin-bottom: 15px;">
+                                                        <div
+                                                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                                            <strong
+                                                                style="color: #c41e3a;">${comment.authorName}</strong>
+                                                            <span
+                                                                style="font-size: 13px; color: #666;">${comment.formattedDate}</span>
+                                                        </div>
+                                                        <p style="line-height: 1.6;">${comment.content}</p>
+                                                    </div>
+                                                </c:forEach>
+                                            </div>
+
+                                            <c:if test="${totalComments > fn:length(comments)}">
+                                                <div style="text-align: center; margin-top: 25px;">
+                                                    <a href="#" class="btn btn-primary" onclick="loadMoreComments()">Xem
+                                                        thêm bình luận</a>
+                                                </div>
+                                            </c:if>
+                                        </c:if>
+                                    </div>
+                                </main>
+
+                                <!-- Sidebar -->
+                                <aside class="sidebar">
+                                    <!-- Most Viewed Widget -->
+                                    <c:if test="${not empty mostViewedArticles}">
+                                        <div class="widget">
+                                            <div class="widget-header">
+                                                📊 Tin được xem nhiều
+                                            </div>
+                                            <div class="widget-content">
+                                                <ul class="widget-list">
+                                                    <c:forEach var="viewedArticle" items="${mostViewedArticles}">
+                                                        <li>
+                                                            <img src="${pageContext.request.contextPath}${viewedArticle.thumbnail}"
+                                                                alt="${viewedArticle.title}" class="widget-thumb">
+                                                            <div class="widget-item-content">
+                                                                <a href="${pageContext.request.contextPath}/views/docgia/detail.jsp?id=${viewedArticle.id}"
+                                                                    class="widget-item-title">
+                                                                    ${viewedArticle.title}
+                                                                </a>
+                                                                <div class="widget-item-meta">${viewedArticle.timeAgo} •
+                                                                    ${viewedArticle.viewCount} lượt xem</div>
+                                                            </div>
+                                                        </li>
+                                                    </c:forEach>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </c:if>
+
+                                    <!-- Latest News -->
+                                    <c:if test="${not empty latestArticles}"></c:if>
+                                    <dlass="widget">
+                                        <div class="widget-header">
+                                            📰 Tin mới nhất
+                                        </div>
+                                        <div class="widget-content">
+                                            <ul class="widget-list">
+                                                <c:forEach var="latestArticle" items="${latestArticles}">
+                                                    <li>
+                                                        <img src="${pageContext.request.contextPath}${latestArticle.thumbnail}"
+                                                            alt="${latestArticle.title}" class="widget-thumb">
+                                                        <div class="widget-item-content">
+                                                            <a href="${pageContext.request.contextPath}/views/docgia/detail.jsp?id=${latestArticle.id}"
+                                                                class="widget-item-title">
+                                                                ${latestArticle.title}
+                                                            </a>
+                                                            <div class="widget-item-meta">${latestArticle.timeAgo}</div>
+                                                        </div>
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
+                            </div>
+                            </c:if>
+
+                            <!-- Newsletter Widget -->
+                            <div class="widget">
+                                <div class="widget-header">
+                                    📧 Nhận tin thể thao
+                                </div>
+                                <div class="widget-content">
+                                    <p style="margin-bottom: 15px; font-size: 14px; color: #666;">
+                                        Đăng ký nhận tin tức thể thao mới nhất từ ABC News
+                                    </p>
+                                    <form class="newsletter-form"
+                                        action="${pageContext.request.contextPath}/views/docgia/newsletter.jsp"
+                                        method="post">
+                                        <input type="email" name="email" placeholder="Email của bạn"
+                                            class="newsletter-input" required>
+                                        <button type="submit" class="newsletter-btn">Đăng ký</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Ad Banner -->
+                            <c:if test="${not empty adBanner}"></c:if>
+                            <div class="widget">
+                                <div class="widget-content" style="text-align: center; padding: 20px;"></div>
+                                <a href="${adBanner.url}" target="_blank">
+                                    <img src="${pageContext.request.contextPath}${adBanner.image}"
+                                        alt="${adBanner.title}"
+                                        style="width: 100%; max-width: 300px; height: auto; border-radius: 8px;">
+                                </a>
+                            </div>
+                        </div>
+                        </c:if>
+                        </aside>
+                    </div>
+                    </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <footer class="footer">
+                        <div class="container">
+                            <div class="footer-content">
+                                <div class="footer-section">
+                                    <h3>ABC News</h3>
+                                    <p style="margin-bottom: 15px; font-size: 14px; line-height: 1.6;">
+                                        Trang tin tức hàng đầu Việt Nam, cập nhật tin nhanh và chính xác 24/7
+                                    </p>
+                                    <div style="display: flex; gap: 10px;">
+                                        <a href="#" style="font-size: 20px;">📘</a>
+                                        <a href="#" style="font-size: 20px;">🐦</a>
+                                        <a href="#" style="font-size: 20px;">📺</a>
+                                        <a href="#" style="font-size: 20px;">📷</a>
+                                    </div>
+                                </div>
+
+                                <div class="footer-section">
+                                    <h3>Thể thao</h3>
+                                    <ul>
+                                        <li><a href="#">Bóng đá Việt Nam</a></li>
+                                        <li><a href="#">Bóng đá quốc tế</a></li>
+                                        <li><a href="#">Tennis</a></li>
+                                        <li><a href="#">Bóng rổ</a></li>
+                                        <li><a href="#">Cầu lông</a></li>
+                                        <li><a href="#">Esports</a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="footer-section">
+                                    <h3>Dịch vụ</h3>
+                                    <ul>
+                                        <li><a
+                                                href="${pageContext.request.contextPath}/views/docgia/newsletter.jsp">Newsletter</a>
+                                        </li>
+                                        <li><a href="#">RSS</a></li>
+                                        <li><a href="#">Mobile App</a></li>
+                                        <li><a href="#">Quảng cáo</a></li>
+                                        <li><a href="#">Liên hệ</a></li>
+                                    </ul>
+                                </div>
+
+                                <div class="footer-section">
+                                    <h3>Liên hệ</h3>
+                                    <ul>
+                                        <li>📍 123 Đường ABC, Quận 1, TP.HCM</li>
+                                        <li>📞 Hotline: 1900-1234</li>
+                                        <li>📧 Email: info@abcnews.vn</li>
+                                        <li>🕒 Làm việc: 24/7</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="footer-bottom">
+                                <p>&copy; 2025 ABC News. Bản quyền thuộc về ABC News. |
+                                    <a href="#" style="color: #c41e3a;">Chính sách bảo mật</a> |
+                                    <a href="#" style="color: #c41e3a;">Điều khoản sử dụng</a>
+                                </p>
+                            </div>
+                        </div>
+                    </footer>
+
+                    <script>
+                        // Display current date
+                        function updateCurrentDate() {
+                            const now = new Date();
+                            const options = {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                timeZone: 'Asia/Ho_Chi_Minh'
+                            };
+                            document.getElementById('currentDate').textContent =
+                                now.toLocaleDateString('vi-VN', options);
+                        }
+
+                        // Initialize
+                        document.addEventListener('DOMContentLoaded', function () {
+                            updateCurrentDate();
+                            setInterval(updateCurrentDate, 60000);
+                        });
+                    </script>
+                </body>

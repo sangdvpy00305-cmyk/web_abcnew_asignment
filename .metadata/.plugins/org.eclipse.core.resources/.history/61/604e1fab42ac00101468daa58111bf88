@@ -1,0 +1,172 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phóng viên - ABC News</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>ABC News - Phóng viên</h1>
+                </div>
+                <div class="user-info">
+                    <span>Xin chào, ${sessionScope.user.fullname}</span>
+                    <a href="${pageContext.request.contextPath}/" class="btn-home" target="_blank">
+                        <i class="fas fa-home"></i> Trang chủ đọc giả
+                    </a>
+                    <a href="${pageContext.request.contextPath}/logout" class="btn-logout">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Reporter Navigation -->
+    <nav class="admin-nav">
+        <div class="container">
+            <ul class="admin-menu">
+                <li><a href="${pageContext.request.contextPath}/reporter" class="active">Trang chủ</a></li>
+                <li><a href="${pageContext.request.contextPath}/reporter/news">Quản lý tin của tôi</a></li>
+                <li><a href="${pageContext.request.contextPath}/reporter/news/add">Viết tin mới</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="admin-content">
+        <div class="container">
+            <div class="dashboard">
+                <h2>Bảng điều khiển phóng viên</h2>
+                
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📰</div>
+                        <div class="stat-info">
+                            <h3>${myTotalNews}</h3>
+                            <p>Tin tức của tôi</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">👁️</div>
+                        <div class="stat-info">
+                            <h3>${myTotalViews}</h3>
+                            <p>Tổng lượt xem</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">🏠</div>
+                        <div class="stat-info">
+                            <h3>${myHomeNews}</h3>
+                            <p>Tin trang chủ</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <h3>${thisMonthNews}</h3>
+                            <p>Tin tháng này</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent News -->
+                <div class="recent-activities">
+                    <div class="activity-section">
+                        <h3>Tin tức mới nhất của tôi</h3>
+                        <div class="activity-list">
+                            <c:forEach var="news" items="${myRecentNews}">
+                                <div class="activity-item">
+                                    <div class="activity-content">
+                                        <h4><a href="${pageContext.request.contextPath}/reporter/news/edit?id=${news.id}">${news.title}</a></h4>
+                                        <p>
+                                            ${news.categoryName} - 
+                                            <fmt:formatDate value="${news.postedDate}" pattern="dd/MM/yyyy"/> - 
+                                            ${news.viewCount} lượt xem
+                                            <c:if test="${news.home == 1}">
+                                                <span class="badge badge-success">Trang chủ</span>
+                                            </c:if>
+                                        </p>
+                                    </div>
+                                    <div class="activity-actions">
+                                        <a href="${pageContext.request.contextPath}/news?id=${news.id}" 
+                                           class="btn-view" target="_blank" title="Xem">👁️</a>
+                                        <a href="${pageContext.request.contextPath}/reporter/news/edit?id=${news.id}" 
+                                           class="btn-edit" title="Sửa">✏️</a>
+                                        <a href="${pageContext.request.contextPath}/reporter/news/delete?id=${news.id}" 
+                                           class="btn-delete" title="Xóa" 
+                                           onclick="return confirm('Bạn có chắc muốn xóa tin này?')">🗑️</a>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </div>
+                        
+                        <c:if test="${empty myRecentNews}">
+                            <p class="empty-message">Bạn chưa có tin tức nào. <a href="${pageContext.request.contextPath}/reporter/news/add">Viết tin đầu tiên</a></p>
+                        </c:if>
+                    </div>
+                    
+                    <div class="activity-section">
+                        <h3>Tin được xem nhiều nhất</h3>
+                        <div class="activity-list">
+                            <c:forEach var="news" items="${myPopularNews}">
+                                <div class="activity-item">
+                                    <div class="activity-content">
+                                        <h4><a href="${pageContext.request.contextPath}/news?id=${news.id}" target="_blank">${news.title}</a></h4>
+                                        <p>
+                                            ${news.categoryName} - 
+                                            <fmt:formatDate value="${news.postedDate}" pattern="dd/MM/yyyy"/> - 
+                                            <strong>${news.viewCount} lượt xem</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </div>
+                        
+                        <c:if test="${empty myPopularNews}">
+                            <p class="empty-message">Chưa có dữ liệu thống kê.</p>
+                        </c:if>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h3>Thao tác nhanh</h3>
+                    <div class="action-buttons">
+                        <a href="${pageContext.request.contextPath}/reporter/news/add" class="btn-action">
+                            <i class="icon">✍️</i>
+                            <span>Viết tin mới</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/reporter/news" class="btn-action">
+                            <i class="icon">📋</i>
+                            <span>Quản lý tin của tôi</span>
+                        </a>
+                        <a href="${pageContext.request.contextPath}/" class="btn-action">
+                            <i class="icon">🏠</i>
+                            <span>Xem trang chủ</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="admin-footer">
+        <div class="container">
+            <p>&copy; 2024 ABC News Reporter Panel. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+</body>
+</html>

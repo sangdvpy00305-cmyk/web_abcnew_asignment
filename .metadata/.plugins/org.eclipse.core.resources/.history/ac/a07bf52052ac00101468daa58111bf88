@@ -1,0 +1,117 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${category.name} - ABC News</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/docgia.css">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <a href="${pageContext.request.contextPath}/views/docgia/index.jsp">
+                            <h1>ABC NEWS</h1>
+                        </a>
+                        <div class="logo-tagline">Tin nhanh - Chính xác - Cập nhật 24/7</div>
+                    </div>
+                    <div class="header-right">
+                        <form class="search-form" action="search.jsp" method="get">
+                            <input type="text" name="q" placeholder="Tìm kiếm tin tức..." required>
+                            <button type="submit">🔍</button>
+                        </form>
+                        <div class="user-menu">
+                            <a href="${pageContext.request.contextPath}/login.jsp">Đăng nhập</a>
+                            <a href="${pageContext.request.contextPath}/register.jsp">Đăng ký</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="${pageContext.request.contextPath}/views/docgia/index.jsp">Trang chủ</a></li>
+                <c:forEach var="cat" items="${categories}">
+                    <li>
+                        <a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=${cat.id}">
+                            ${cat.name}
+                        </a>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="content-layout">
+                <main class="main-content">
+                    <c:if test="${not empty articles}">
+                        <c:forEach var="article" items="${articles}">
+                            <article class="article-card">
+                                <a href="${pageContext.request.contextPath}/detail?id=${article.id}">
+                                    <img src="${pageContext.request.contextPath}/images/${article.image}" alt="${article.title}" class="article-image">
+                                </a>
+                                <div class="article-content">
+                                    <div class="article-category">${article.categoryName}</div>
+                                    <h2 class="article-title">
+                                        <a href="${pageContext.request.contextPath}/detail?id=${article.id}">
+                                            ${article.title}
+                                        </a>
+                                    </h2>
+                                    <p class="article-excerpt">${article.excerpt}</p>
+                                    <div class="article-meta">
+                                        <span>👤 ${article.authorName}</span>
+                                        <span>📅 ${article.formattedDate}</span>
+                                        <span>👁️ ${article.viewCount} lượt xem</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </c:forEach>
+                    </c:if>
+
+                    <c:if test="${empty articles}">
+                        <p>Không có bài viết nào trong chuyên mục này.</p>
+                    </c:if>
+                </main>
+
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <h3>Tin nổi bật</h3>
+                    <ul>
+                        <c:forEach var="hot" items="${topArticles}">
+                            <li>
+                                <a href="${pageContext.request.contextPath}/detail?id=${hot.id}">
+                                    ${hot.title}
+                                </a>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 ABC News. Bản quyền thuộc về ABC News.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,552 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đội tuyển Việt Nam giành chiến thắng lịch sử 4-0 trước Nhật Bản - ABC News</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/docgia.css">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
+    <meta name="description" content="Đội tuyển Việt Nam đã tạo nên cú sốc lớn khi đánh bại đội tuyển Nhật Bản với tỷ số 4-0 trên sân nhà Mỹ Đình trong trận đấu vòng loại World Cup 2026.">
+    <meta property="og:title" content="Đội tuyển Việt Nam giành chiến thắng lịch sử 4-0 trước Nhật Bản">
+    <meta property="og:description" content="Chiến thắng lịch sử mở ra cơ hội lớn cho Việt Nam tiến vào vòng chung kết World Cup lần đầu tiên.">
+    <meta property="og:image" content="../../images/vn-vs-japan.jpg">
+</head>
+<body>
+    <!-- Header Top Bar -->
+    <div class="header-top">
+        <div class="container">
+            <div class="header-top-content">
+                <div class="header-date">
+                    <span id="currentDate"></span>
+                </div>
+                <div class="header-tools">
+                    <a href="#" title="RSS">📡 RSS</a>
+                    <a href="#" title="Mobile">📱 Mobile</a>
+                    <a href="#" title="Ứng dụng">📲 App</a>
+                    <a href="${pageContext.request.contextPath}/views/docgia/newsletter.jsp" title="Newsletter">📧 Newsletter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="header">
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <a href="${pageContext.request.contextPath}/views/docgia/index.jsp">
+                            <h1>ABC NEWS</h1>
+                        </a>
+                        <div class="logo-tagline">Tin nhanh - Chính xác - Cập nhật 24/7</div>
+                    </div>
+                    
+                    <div class="header-right">
+                        <form class="search-form" action="search.jsp" method="get">
+                            <input type="text" name="q" placeholder="Tìm kiếm tin tức..." required>
+                            <button type="submit">🔍</button>
+                        </form>
+                        
+                        <div class="user-menu">
+                            <a href="${pageContext.request.contextPath}/login.jsp">Đăng nhập</a>
+                            <a href="${pageContext.request.contextPath}/login.jsp">Đăng ký</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Menu -->
+    <nav class="navbar">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="${pageContext.request.contextPath}/views/docgia/index.jsp">Trang chủ</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=1">Văn hóa</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=2">Pháp luật</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=3" class="active">Thể thao</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=4">Kinh tế</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=5">Giải trí</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=6">Công nghệ</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=7">Giáo dục</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=8">Y tế</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container" style="margin: 15px auto;">
+        <nav style="font-size: 13px; color: #666;">
+            <a href="${pageContext.request.contextPath}/views/docgia/index.jsp" style="color: #c41e3a;">Trang chủ</a> 
+            <span style="margin: 0 8px;">›</span>
+            <a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=3" style="color: #c41e3a;">Thể thao</a>
+            <span style="margin: 0 8px;">›</span>
+            <span>Bóng đá</span>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="content-layout">
+                <!-- Main Article Content -->
+                <main class="main-content">
+                    <!-- Article Header -->
+                    <article>
+                        <div class="article-category" style="margin-bottom: 15px;">THỂ THAO</div>
+                        
+                        <h1 style="font-size: 2.5rem; font-weight: bold; color: #333; line-height: 1.2; margin-bottom: 20px;">
+                            Đội tuyển Việt Nam giành chiến thắng lịch sử 4-0 trước Nhật Bản tại vòng loại World Cup 2026
+                        </h1>
+
+                        <div class="article-meta" style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f0f0f0;">
+                            <div class="meta-item">
+                                <span class="meta-icon">👤</span>
+                                <span><strong>Trần Văn Thể Thao</strong> - Phóng viên thể thao</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">📅</span>
+                                <span>Thứ Bảy, 29/09/2025 - 22:45</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">📍</span>
+                                <span>Sân vận động Mỹ Đình, Hà Nội</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">👁️</span>
+                                <span>15,678 lượt xem</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">💬</span>
+                                <span>234 bình luận</span>
+                            </div>
+                        </div>
+
+                        <!-- Social Share -->
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <span style="font-weight: bold; color: #666;">Chia sẻ:</span>
+                            <a href="#" style="background: #3b5998; color: white; padding: 8px 15px; border-radius: 5px; font-size: 13px;">📘 Facebook</a>
+                            <a href="#" style="background: #1da1f2; color: white; padding: 8px 15px; border-radius: 5px; font-size: 13px;">🐦 Twitter</a>
+                            <a href="#" style="background: #25d366; color: white; padding: 8px 15px; border-radius: 5px; font-size: 13px;">📱 WhatsApp</a>
+                            <a href="#" style="background: #0077b5; color: white; padding: 8px 15px; border-radius: 5px; font-size: 13px;">💼 LinkedIn</a>
+                        </div>
+
+                        <!-- Article Lead -->
+                        <div style="font-size: 18px; font-weight: 500; color: #444; line-height: 1.6; margin-bottom: 25px; padding: 20px; background: #f0f7ff; border-left: 4px solid #c41e3a; border-radius: 0 8px 8px 0;">
+                            <strong>HÀ NỘI</strong> - Trong trận đấu được coi là "chung kết sớm" tại bảng B vòng loại thứ 3 World Cup 2026 khu vực châu Á, đội tuyển Việt Nam đã tạo nên cú sốc lớn khi đánh bại đội tuyển Nhật Bản với tỷ số 4-0 trên sân nhà Mỹ Đình. Đây được coi là chiến thắng lịch sử và mở ra cơ hội lớn cho Việt Nam tiến vào vòng chung kết World Cup lần đầu tiên.
+                        </div>
+
+                        <!-- Main Image -->
+                        <figure style="margin: 30px 0; text-align: center;">
+                            <img src="../../images/vn-vs-japan-main.jpg" alt="Đội tuyển Việt Nam ăn mừng bàn thắng" style="width: 100%; height: 500px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <figcaption style="margin-top: 10px; font-size: 14px; color: #666; font-style: italic;">
+                                Các cầu thủ Việt Nam ăn mừng bàn thắng thứ 4 vào lưới Nhật Bản. Ảnh: <strong>Hoàng Hà</strong>
+                            </figcaption>
+                        </figure>
+
+                        <!-- Article Body -->
+                        <div style="font-size: 16px; line-height: 1.8; color: #333;">
+                            <p style="margin-bottom: 20px;">
+                                Trước trận đấu, không ai dám nghĩ rằng đội tuyển Việt Nam có thể tạo nên bất ngờ trước "Samurai xanh" - đội bóng đang đứng thứ 15 trên bảng xếp hạng FIFA và từng 4 lần dự World Cup. Tuy nhiên, với sự chuẩn bị kỹ lưỡng và tinh thần quyết tâm cao độ, thầy trò HLV Park Hang-seo đã viết nên trang sử mới cho bóng đá Việt Nam.
+                            </p>
+
+                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #c41e3a; margin: 30px 0 15px 0;">Hiệp một bùng nổ với 3 bàn thắng</h2>
+
+                            <p style="margin-bottom: 20px;">
+                                Ngay từ những phút đầu tiên, đội tuyển Việt Nam đã chơi với tinh thần tấn công mạnh mẽ. Bàn thắng mở tỷ số đến ở phút thứ 12 sau một pha phối hợp đẹp mắt giữa Nguyễn Quang Hải và Phan Văn Đức. Quang Hải đã có cú sút chéo góc tinh tế, đánh bại thủ môn Kawashima của Nhật Bản.
+                            </p>
+
+                            <figure style="margin: 25px 0; text-align: center;">
+                                <img src="../../images/goal1-quang-hai.jpg" alt="Bàn thắng của Quang Hải" style="width: 100%; height: 350px; object-fit: cover; border-radius: 8px;">
+                                <figcaption style="margin-top: 8px; font-size: 13px; color: #666; font-style: italic;">
+                                    Quang Hải ăn mừng bàn thắng mở tỷ số. Ảnh: <strong>VFF</strong>
+                                </figcaption>
+                            </figure>
+
+                            <p style="margin-bottom: 20px;">
+                                Không dừng lại ở đó, chỉ 8 phút sau, Nguyễn Tiến Linh đã nâng tỷ số lên 2-0 sau một pha đánh đầu chuẩn xác từ quả phạt góc của Nguyễn Tuấn Anh. Bàn thắng thứ ba đến ở phút 38 do công của Phan Văn Đức sau một pha phản công nhanh như chớp.
+                            </p>
+
+                            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                                <h3 style="color: #856404; margin-bottom: 10px; font-size: 1.2rem;">📊 Thống kê hiệp một:</h3>
+                                <ul style="color: #856404; line-height: 1.6;">
+                                    <li>Tỷ lệ kiểm soát bóng: Việt Nam 58% - 42% Nhật Bản</li>
+                                    <li>Số cú sút: Việt Nam 8 - 3 Nhật Bản</li>
+                                    <li>Cú sút trúng đích: Việt Nam 6 - 1 Nhật Bản</li>
+                                    <li>Phạt góc: Việt Nam 5 - 2 Nhật Bản</li>
+                                </ul>
+                            </div>
+
+                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #c41e3a; margin: 30px 0 15px 0;">Hiệp hai: Ấn định chiến thắng lịch sử</h2>
+
+                            <p style="margin-bottom: 20px;">
+                                Bước vào hiệp hai, Nhật Bản đã tăng cường tấn công và tạo ra nhiều cơ hội nguy hiểm. Tuy nhiên, hàng thủ Việt Nam với sự xuất sắc của thủ môn Đặng Văn Lâm đã chơi như một bức tường thép. Đặc biệt, ở phút 67, Văn Lâm đã có pha cứu thua xuất thần trước cú sút cận thành của Takumi Minamino.
+                            </p>
+
+                            <p style="margin-bottom: 20px;">
+                                Bàn thắng ấn định tỷ số 4-0 đến ở phút 85 sau một pha solo đẹp mắt của Nguyễn Công Phượng. Anh đã qua mặt 3 hậu vệ Nhật Bản trước khi tung cú sút chéo góc không thể cản phá.
+                            </p>
+
+                            <figure style="margin: 25px 0; text-align: center;">
+                                <img src="../../images/goal4-cong-phuong.jpg" alt="Bàn thắng của Công Phượng" style="width: 100%; height: 350px; object-fit: cover; border-radius: 8px;">
+                                <figcaption style="margin-top: 8px; font-size: 13px; color: #666; font-style: italic;">
+                                    Công Phượng ấn định chiến thắng 4-0 cho Việt Nam. Ảnh: <strong>Getty Images</strong>
+                                </figcaption>
+                            </figure>
+
+                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #c41e3a; margin: 30px 0 15px 0;">Ý nghĩa lịch sử của chiến thắng</h2>
+
+                            <p style="margin-bottom: 20px;">
+                                Chiến thắng 4-0 trước Nhật Bản không chỉ là kết quả bất ngờ mà còn mang ý nghĩa lịch sử đối với bóng đá Việt Nam. Đây là lần đầu tiên Việt Nam đánh bại Nhật Bản với cách biệt lớn như vậy trong một trận đấu chính thức.
+                            </p>
+
+                            <p style="margin-bottom: 20px;">
+                                Với chiến thắng này, đội tuyển Việt Nam đã vươn lên vị trí thứ 2 trong bảng B với 13 điểm, chỉ kém Australia 2 điểm. Cơ hội để Việt Nam lần đầu tiên trong lịch sử giành vé dự World Cup đang rất sáng sủa.
+                            </p>
+
+                            <div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 8px; padding: 20px; margin: 25px 0;">
+                                <h3 style="color: #0c5460; margin-bottom: 10px; font-size: 1.2rem;">🏆 Bảng xếp hạng bảng B sau vòng 8:</h3>
+                                <table style="width: 100%; font-size: 14px; color: #0c5460;">
+                                    <tr style="font-weight: bold; border-bottom: 1px solid #bee5eb;">
+                                        <td style="padding: 8px;">Hạng</td>
+                                        <td style="padding: 8px;">Đội</td>
+                                        <td style="padding: 8px; text-align: center;">Trận</td>
+                                        <td style="padding: 8px; text-align: center;">Điểm</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px;">1</td>
+                                        <td style="padding: 6px;">Australia</td>
+                                        <td style="padding: 6px; text-align: center;">8</td>
+                                        <td style="padding: 6px; text-align: center; font-weight: bold;">15</td>
+                                    </tr>
+                                    <tr style="background: rgba(196, 30, 58, 0.1);">
+                                        <td style="padding: 6px; font-weight: bold;">2</td>
+                                        <td style="padding: 6px; font-weight: bold;">Việt Nam</td>
+                                        <td style="padding: 6px; text-align: center;">8</td>
+                                        <td style="padding: 6px; text-align: center; font-weight: bold;">13</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px;">3</td>
+                                        <td style="padding: 6px;">Nhật Bản</td>
+                                        <td style="padding: 6px; text-align: center;">8</td>
+                                        <td style="padding: 6px; text-align: center;">11</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px;">4</td>
+                                        <td style="padding: 6px;">Saudi Arabia</td>
+                                        <td style="padding: 6px; text-align: center;">8</td>
+                                        <td style="padding: 6px; text-align: center;">8</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #c41e3a; margin: 30px 0 15px 0;">Phản ứng của HLV và cầu thủ</h2>
+
+                            <p style="margin-bottom: 20px;">
+                                HLV Park Hang-seo không giấu được niềm vui sau chiến thắng lịch sử: <em>"Tôi rất tự hào về các cầu thủ. Họ đã chơi với tinh thần tuyệt vời và thực hiện đúng chiến thuật mà chúng tôi đã chuẩn bị. Đây là chiến thắng của cả đội bóng và người hâm mộ Việt Nam."</em>
+                            </p>
+
+                            <p style="margin-bottom: 20px;">
+                                Đội trưởng Nguyễn Quang Hải chia sẻ: <em>"Chúng tôi đã chuẩn bị rất kỹ cho trận đấu này. Mọi người đều tin tưởng vào nhau và chơi hết mình. Chiến thắng này là động lực lớn cho chúng tôi trong những trận đấu còn lại."</em>
+            </p>
+
+                            <h2 style="font-size: 1.5rem; font-weight: bold; color: #c41e3a; margin: 30px 0 15px 0;">Lịch thi đấu tiếp theo</h2>
+
+                            <p style="margin-bottom: 20px;">
+                                Sau chiến thắng lịch sử này, đội tuyển Việt Nam sẽ có 2 trận đấu cuối cùng trong vòng loại. Trận tiếp theo sẽ là cuộc đối đầu với Australia trên sân khách vào ngày 15/10, trước khi kết thúc vòng loại bằng trận đấu với Saudi Arabia trên sân nhà Mỹ Đình vào ngày 19/11.
+                            </p>
+
+                            <p style="margin-bottom: 20px;">
+                                Nếu giành được ít nhất 4 điểm trong 2 trận còn lại, đội tuyển Việt Nam sẽ chính thức giành vé dự World Cup 2026 tại Mỹ, Canada và Mexico - một giấc mơ mà bóng đá Việt Nam đã ấp ủ suốt nhiều thập kỷ.
+                            </p>
+                        </div>
+
+                        <!-- Tags -->
+                        <div style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                            <h3 style="margin-bottom: 15px; color: #666; font-size: 1rem;">🏷️ Từ khóa:</h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <span style="background: #c41e3a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">Đội tuyển Việt Nam</span>
+                                <span style="background: #c41e3a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">World Cup 2026</span>
+                                <span style="background: #c41e3a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">Nhật Bản</span>
+                                <span style="background: #c41e3a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">Park Hang-seo</span>
+                                <span style="background: #c41e3a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">Quang Hải</span>
+                                <span style="background: #c41e3a; color: white; padding: 5px 12px; border-radius: 15px; font-size: 13px;">Mỹ Đình</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Related Articles -->
+                    <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #f0f0f0;">
+                        <h2 style="font-size: 1.5rem; color: #c41e3a; margin-bottom: 20px;">📰 Tin liên quan</h2>
+                        <div class="articles-grid">
+                            <article class="article-card">
+                                <a href="detail.jsp?id=24">
+                                    <img src="../../images/related1.jpg" alt="Tin liên quan 1" class="article-image">
+                                </a>
+                                <div class="article-content">
+                                    <div class="article-category">THỂ THAO</div>
+                                    <h3 class="article-title">
+                                        <a href="detail.jsp?id=24">Người hâm mộ xuống đường ăn mừng chiến thắng lịch sử của Việt Nam</a>
+                                    </h3>
+                                    <div class="article-meta">
+                                        <div class="meta-item">
+                                            <span class="meta-icon">📅</span>
+                                            <span>30/09/2025</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <article class="article-card">
+                                <a href="detail.jsp?id=25">
+                                    <img src="../../images/related2.jpg" alt="Tin liên quan 2" class="article-image">
+                                </a>
+                                <div class="article-content">
+                                    <div class="article-category">THỂ THAO</div>
+                                    <h3 class="article-title">
+                                        <a href="detail.jsp?id=25">Báo chí thế giới ca ngợi màn trình diễn của Việt Nam</a>
+                                    </h3>
+                                    <div class="article-meta">
+                                        <div class="meta-item">
+                                            <span class="meta-icon">📅</span>
+                                            <span>30/09/2025</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #f0f0f0;">
+                        <h2 style="font-size: 1.5rem; color: #c41e3a; margin-bottom: 20px;">💬 Bình luận (234)</h2>
+                        
+                        <!-- Comment Form -->
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                            <h3 style="margin-bottom: 15px; font-size: 1.1rem;">Để lại bình luận của bạn</h3>
+                            <form>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                                    <input type="text" placeholder="Họ và tên" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                    <input type="email" placeholder="Email" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                </div>
+                                <textarea placeholder="Nội dung bình luận..." style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: vertical; margin-bottom: 15px;"></textarea>
+                                <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+                            </form>
+                        </div>
+
+                        <!-- Sample Comments -->
+                        <div style="space-y: 20px;">
+                            <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #c41e3a; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <strong style="color: #c41e3a;">Nguyễn Văn A</strong>
+                                    <span style="font-size: 13px; color: #666;">2 giờ trước</span>
+                                </div>
+                                <p style="line-height: 1.6;">Chiến thắng quá tuyệt vời! Tôi đã khóc khi xem trận đấu. Cảm ơn các cầu thủ đã mang lại niềm tự hào cho người Việt Nam! 🇻🇳⚽</p>
+                            </div>
+
+                            <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #c41e3a; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <strong style="color: #c41e3a;">Trần Thị B</strong>
+                                    <span style="font-size: 13px; color: #666;">3 giờ trước</span>
+                                </div>
+                                <p style="line-height: 1.6;">Quang Hải và Công Phượng chơi quá hay! Hy vọng Việt Nam sẽ giành vé dự World Cup. Chúng ta xứng đáng!</p>
+                            </div>
+
+                            <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #c41e3a; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <strong style="color: #c41e3a;">Lê Văn C</strong>
+                                    <span style="font-size: 13px; color: #666;">4 giờ trước</span>
+                                </div>
+                                <p style="line-height: 1.6;">Đây là trận đấu hay nhất tôi từng xem của đội tuyển Việt Nam. HLV Park Hang-seo thật sự tài năng!</p>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 25px;">
+                            <button class="btn btn-primary">Xem thêm bình luận</button>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <!-- Most Viewed Widget -->
+                    <div class="widget">
+                        <div class="widget-header">
+                            📊 Tin được xem nhiều
+                        </div>
+                        <div class="widget-content">
+                            <ul class="widget-list">
+                                <li>
+                                    <img src="../../images/thumb1.jpg" alt="Tin 1" class="widget-thumb">
+                                    <div class="widget-item-content">
+                                        <a href="detail.jsp?id=26" class="widget-item-title">
+                                            Messi chính thức gia hạn hợp đồng với Inter Miami
+                                        </a>
+                                        <div class="widget-item-meta">1 giờ trước • 25,678 lượt xem</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <img src="../../images/thumb2.jpg" alt="Tin 2" class="widget-thumb">
+                                    <div class="widget-item-content">
+                                        <a href="detail.jsp?id=27" class="widget-item-title">
+                                            Ronaldo lập hat-trick ở tuổi 40 tại Saudi Arabia
+                                        </a>
+                                        <div class="widget-item-meta">2 giờ trước • 18,432 lượt xem</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <img src="../../images/thumb3.jpg" alt="Tin 3" class="widget-thumb">
+                                    <div class="widget-item-content">
+                                        <a href="detail.jsp?id=28" class="widget-item-title">
+                                            Premier League: Man City thắng Arsenal 3-1
+                                        </a>
+                                        <div class="widget-item-meta">3 giờ trước • 14,567 lượt xem</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Latest Sports News -->
+                    <div class="widget">
+                        <div class="widget-header">
+                            ⚽ Tin thể thao mới nhất
+                        </div>
+                        <div class="widget-content">
+                            <ul class="widget-list">
+                                <li>
+                                    <img src="../../images/latest-sport1.jpg" alt="Tin mới 1" class="widget-thumb">
+                                    <div class="widget-item-content">
+                                        <a href="detail.jsp?id=29" class="widget-item-title">
+                                            V-League: HAGL thắng Viettel 2-0 tại Pleiku
+                                        </a>
+                                        <div class="widget-item-meta">30 phút trước</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <img src="../../images/latest-sport2.jpg" alt="Tin mới 2" class="widget-thumb">
+                                    <div class="widget-item-content">
+                                        <a href="detail.jsp?id=30" class="widget-item-title">
+                                            Tennis: Novak Djokovic rút lui khỏi Paris Masters
+                                        </a>
+                                        <div class="widget-item-meta">1 giờ trước</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter Widget -->
+                    <div class="widget">
+                        <div class="widget-header">
+                            📧 Nhận tin thể thao
+                        </div>
+                        <div class="widget-content">
+                            <p style="margin-bottom: 15px; font-size: 14px; color: #666;">
+                                Đăng ký nhận tin tức thể thao mới nhất từ ABC News
+                            </p>
+                            <form class="newsletter-form" action="${pageContext.request.contextPath}/views/docgia/newsletter.jsp" method="post">
+                                <input type="email" name="email" placeholder="Email của bạn" class="newsletter-input" required>
+                                <button type="submit" class="newsletter-btn">Đăng ký</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Ad Banner -->
+                    <div class="widget">
+                        <div class="widget-content" style="text-align: center; padding: 20px;">
+                            <div style="background: #f0f0f0; height: 250px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #666;">
+                                📢 Quảng cáo<br>300x250
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ABC News</h3>
+                    <p style="margin-bottom: 15px; font-size: 14px; line-height: 1.6;">
+                        Trang tin tức hàng đầu Việt Nam, cập nhật tin nhanh và chính xác 24/7
+                    </p>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="#" style="font-size: 20px;">📘</a>
+                        <a href="#" style="font-size: 20px;">🐦</a>
+                        <a href="#" style="font-size: 20px;">📺</a>
+                        <a href="#" style="font-size: 20px;">📷</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Thể thao</h3>
+                    <ul>
+                        <li><a href="#">Bóng đá Việt Nam</a></li>
+                        <li><a href="#">Bóng đá quốc tế</a></li>
+                        <li><a href="#">Tennis</a></li>
+                        <li><a href="#">Bóng rổ</a></li>
+                        <li><a href="#">Cầu lông</a></li>
+                        <li><a href="#">Esports</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Dịch vụ</h3>
+                    <ul>
+                        <li><a href="${pageContext.request.contextPath}/views/docgia/newsletter.jsp">Newsletter</a></li>
+                        <li><a href="#">RSS</a></li>
+                        <li><a href="#">Mobile App</a></li>
+                        <li><a href="#">Quảng cáo</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Liên hệ</h3>
+                    <ul>
+                        <li>📍 123 Đường ABC, Quận 1, TP.HCM</li>
+                        <li>📞 Hotline: 1900-1234</li>
+                        <li>📧 Email: info@abcnews.vn</li>
+                        <li>🕒 Làm việc: 24/7</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 ABC News. Bản quyền thuộc về ABC News. | 
+                   <a href="#" style="color: #c41e3a;">Chính sách bảo mật</a> | 
+                   <a href="#" style="color: #c41e3a;">Điều khoản sử dụng</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Display current date
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                timeZone: 'Asia/Ho_Chi_Minh'
+            };
+            document.getElementById('currentDate').textContent = 
+                now.toLocaleDateString('vi-VN', options);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            setInterval(updateCurrentDate, 60000);
+        });
+    </script>
+</body>

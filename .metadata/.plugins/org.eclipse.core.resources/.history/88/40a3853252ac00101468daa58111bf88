@@ -1,0 +1,148 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký Newsletter - ABC News</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/docgia.css">
+    <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/images/favicon.ico">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header-top">
+        <div class="container">
+            <div class="header-top-content">
+                <div class="header-date"><span id="currentDate"></span></div>
+                <div class="header-tools">
+                    <a href="#">📡 RSS</a>
+                    <a href="#">📱 Mobile</a>
+                    <a href="#">📲 App</a>
+                    <a href="${pageContext.request.contextPath}/views/docgia/newsletter.jsp" class="active">📧 Newsletter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="header-main">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <a href="${pageContext.request.contextPath}/views/docgia/index.jsp"><h1>ABC NEWS</h1></a>
+                        <div class="logo-tagline">Tin nhanh - Chính xác - Cập nhật 24/7</div>
+                    </div>
+
+                    <div class="header-right">
+                        <form class="search-form" action="search.jsp" method="get">
+                            <input type="text" name="q" placeholder="Tìm kiếm tin tức..." required>
+                            <button type="submit">🔍</button>
+                        </form>
+                        <div class="user-menu">
+                            <a href="${pageContext.request.contextPath}/login.jsp">Đăng nhập</a>
+                            <a href="${pageContext.request.contextPath}/login.jsp">Đăng ký</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="${pageContext.request.contextPath}/views/docgia/index.jsp">Trang chủ</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=3">Thể thao</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=4">Kinh tế</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=5">Giải trí</a></li>
+                <li><a href="${pageContext.request.contextPath}/views/docgia/category.jsp?id=6">Công nghệ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container" style="margin: 15px auto;">
+        <nav style="font-size: 13px; color: #666;">
+            <a href="${pageContext.request.contextPath}/views/docgia/index.jsp" style="color: #c41e3a;">Trang chủ</a> 
+            › <span>Newsletter</span>
+        </nav>
+    </div>
+
+    <!-- Nội dung chính -->
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="content-layout">
+                <main class="main-content">
+                    <section style="text-align:center; margin-bottom:40px; padding:40px 20px; background:linear-gradient(135deg,#c41e3a,#a01729); color:white; border-radius:12px;">
+                        <div style="font-size:4rem;">📧</div>
+                        <h1 style="font-size:2.5rem;">Newsletter ABC News</h1>
+                        <p>Nhận tin tức nóng hổi và chính xác nhất ngay trong hộp thư của bạn.</p>
+                    </section>
+
+                    <!-- Form đăng ký -->
+                    <section style="background:white; padding:40px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+                        <h2 style="text-align:center; color:#c41e3a; margin-bottom:30px;">📝 Đăng ký Newsletter</h2>
+                        <form id="newsletterForm" action="${pageContext.request.contextPath}/newsletter" method="post" style="max-width:600px;margin:auto;">
+                            <label for="email" style="font-size:1.1rem;">📧 Email của bạn:</label>
+                            <input type="email" id="email" name="email" placeholder="your.email@gmail.com" required
+                                style="width:100%;padding:15px 20px;margin:10px 0 20px;border:2px solid #e0e0e0;border-radius:8px;">
+
+                            <label style="font-size:1.1rem;">📂 Chuyên mục quan tâm:</label>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:20px;">
+                                <label><input type="checkbox" name="categories" value="news" checked> 📰 Tin tổng hợp</label>
+                                <label><input type="checkbox" name="categories" value="sports"> ⚽ Thể thao</label>
+                                <label><input type="checkbox" name="categories" value="business"> 💼 Kinh doanh</label>
+                                <label><input type="checkbox" name="categories" value="tech"> 💻 Công nghệ</label>
+                                <label><input type="checkbox" name="categories" value="entertainment"> 🎭 Giải trí</label>
+                                <label><input type="checkbox" name="categories" value="health"> 🏥 Sức khỏe</label>
+                            </div>
+
+                            <label style="font-size:1.1rem;">⏰ Tần suất nhận email:</label>
+                            <select name="frequency" style="width:100%;padding:15px 20px;border:2px solid #e0e0e0;border-radius:8px;margin-bottom:20px;">
+                                <option value="daily">Hàng ngày</option>
+                                <option value="weekly" selected>Hàng tuần</option>
+                                <option value="breaking">Chỉ tin nóng</option>
+                            </select>
+
+                            <div style="margin-bottom:20px;">
+                                <input type="checkbox" id="agree" name="agree" required>
+                                <label for="agree">Tôi đồng ý với <a href="#">Điều khoản</a> và <a href="#">Chính sách</a></label>
+                            </div>
+
+                            <div style="text-align:center;">
+                                <button type="submit" style="font-size:1.1rem;padding:15px 40px;background:linear-gradient(135deg,#c41e3a,#a01729);color:white;border:none;border-radius:8px;cursor:pointer;">📧 Đăng ký ngay</button>
+                            </div>
+                        </form>
+                    </section>
+                </main>
+
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="widget">
+                        <div class="widget-header">📈 Thống kê Newsletter</div>
+                        <div class="widget-content">
+                            <p><strong>12,547</strong> người đăng ký</p>
+                            <p>76% mở email</p>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container" style="text-align:center;padding:20px 0;color:#666;">
+            © 2025 ABC News • Tin nhanh – Chính xác – Cập nhật 24/7
+        </div>
+    </footer>
+
+    <script>
+        // Hiển thị ngày hiện tại
+        document.getElementById("currentDate").textContent = new Date().toLocaleDateString('vi-VN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    </script>
+</body>
+</html>

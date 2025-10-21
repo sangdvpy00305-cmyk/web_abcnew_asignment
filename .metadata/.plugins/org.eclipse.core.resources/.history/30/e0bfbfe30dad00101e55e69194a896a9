@@ -1,0 +1,466 @@
+package com.abcnews.servlet;
+
+import com.abcnews.dao.NewsDAO;
+import com.abcnews.dao.CategoryDAO;
+import com.abcnews.model.News;
+import com.abcnews.model.Category;
+import com.abcnews.model.User;
+import com.abcnews.utils.FileUploadUtils;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+
+import java.io.IOException;
+import java.io.File;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@WebServlet("/reporter/news/*")
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
+    maxFileSize = 1024 * 1024 * 10,      // 10MB
+    maxRequestSize = 1024 * 1024 * 50    // 50MB
+)
+public class ReporterNewsServlet extends HttpServlet {
+    private NewsDAO newsDAO = new NewsDAO();
+    private CategoryDAO categoryDAO = new CategoryDAO();
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // Kiểm tra quyền phóng viên
+        User currentUser = checkReporterPermission(request, response);
+        if (currentUser == null) return;
+        
+        String pathInfo = request.getPathInfo();
+        
+        try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+                // Hiển thị danh sách tin tức của phóng viên
+                showMyNewsList(request, response, currentUser);
+            } else if (pathInfo.equals("/add")) {
+                // Hiển thị form thêm tin tức
+                loadFormData(request);
+                request.getRequestDispatcher("/views/phongvien/news-add.jsp").forward(request, response);
+            } else if (pathInfo.startsWith("/edit/")) {
+                // Hiển thị form sửa tin tức
+                String newsId = pathInfo.substring(6);
+                showEditForm(request, response, newsId, currentUser);
+            } else if (pathInfo.startsWith("/view/")) {
+                // Xem chi tiết tin tức
+                String newsId = pathInfo.substring(6);
+                viewNewsDetail(request, response, newsId, currentUser);
+            } else if (pathInfo.startsWith("/delete/")) {
+                // Xóa tin tức
+                String newsId = pathInfo.substring(8);
+                deleteNews(request, response, newsId, currentUser);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            showMyNewsList(request, response, currentUser);
+        }
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // Kiểm tra quyền phóng viên
+        User currentUser = checkReporterPermission(request, response);
+        if (currentUser == null) return;
+        
+        String pathInfo = request.getPathInfo();
+        
+        try {
+            if (pathInfo != null && pathInfo.equals("/add")) {
+                // Thêm tin tức mới
+                addNews(request, response, currentUser);
+            } else if (pathInfo != null && pathInfo.startsWith("/edit/")) {
+                // Cập nhật tin tức
+                String newsId = pathInfo.substring(6);
+                updateNews(request, response, newsId, currentUser);
+            } else if (pathInfo != null && pathInfo.startsWith("/delete/")) {
+                // Xóa tin tức (POST method)
+                String newsId = pathInfo.substring(8);
+                deleteNews(request, response, newsId, currentUser);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            showMyNewsList(request, response, currentUser);
+        }
+    }
+    
+    private User checkReporterPermission(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return null;
+        }
+        
+        User user = (User) session.getAttribute("user");
+        if (!user.isReporter()) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return null;
+        }
+        return user;
+    }
+    
+    private void loadFormData(HttpServletRequest request) {
+        // Load categories cho form
+        List<Category> categories = categoryDAO.getAllCategories();
+        request.setAttribute("categories", categories);
+    }
+    
+    private void showMyNewsList(HttpServletRequest request, HttpServletResponse response, User currentUser) 
+            throws ServletException, IOException {
+        
+        // Lấy parameters cho tìm kiếm và phân trang
+        String search = request.getParameter("search");
+        String status = request.getParameter("status");
+        String category = request.getParameter("category");
+        String pageStr = request.getParameter("page");
+        
+        int page = 1;
+        int pageSize = 10;
+        
+        try {
+            if (pageStr != null) {
+                page = Integer.parseInt(pageStr);
+            }
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+        
+        // Lấy tất cả tin tức và lọc theo tác giả
+        List<News> allNews = newsDAO.getAllNews();
+        List<News> myNews = allNews.stream()
+            .filter(news -> currentUser.getId().equals(news.getAuthor()))
+            .collect(Collectors.toList());
+        
+        // Áp dụng bộ lọc
+        if (search != null && !search.trim().isEmpty()) {
+            myNews = myNews.stream()
+                .filter(news -> news.getTitle().toLowerCase().contains(search.toLowerCase()) ||
+                               (news.getContent() != null && news.getContent().toLowerCase().contains(search.toLowerCase())))
+                .collect(Collectors.toList());
+        }
+        
+        if (status != null && !status.isEmpty()) {
+            int statusInt = Integer.parseInt(status);
+            myNews = myNews.stream()
+                .filter(news -> news.getHome() != null && news.getHome() == statusInt)
+                .collect(Collectors.toList());
+        }
+        
+        if (category != null && !category.isEmpty()) {
+            myNews = myNews.stream()
+                .filter(news -> category.equals(news.getCategoryId()))
+                .collect(Collectors.toList());
+        }
+        
+        // Tính toán phân trang
+        int totalNews = myNews.size();
+        int totalPages = (int) Math.ceil((double) totalNews / pageSize);
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, totalNews);
+        
+        List<News> pagedNews = myNews.subList(startIndex, endIndex);
+        
+        // Load categories cho filter
+        List<Category> categories = categoryDAO.getAllCategories();
+        
+        // Set attributes
+        request.setAttribute("myNews", pagedNews);
+        request.setAttribute("categories", categories);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalNews", totalNews);
+        
+        request.getRequestDispatcher("/views/phongvien/news-list.jsp").forward(request, response);
+    }
+    
+    private void addNews(HttpServletRequest request, HttpServletResponse response, User currentUser) 
+            throws ServletException, IOException {
+        
+        String title = request.getParameter("title");
+        String summary = request.getParameter("summary");
+        String content = request.getParameter("content");
+        String categoryId = request.getParameter("categoryId");
+        String action = request.getParameter("action");
+        String requestPublish = request.getParameter("requestPublish");
+        
+        // Debug log
+        System.out.println("📝 Adding news - Title: " + title);
+        System.out.println("📝 Adding news - Summary: " + summary);
+        System.out.println("📝 Adding news - Content: " + content);
+        System.out.println("📝 Adding news - CategoryId: " + categoryId);
+        System.out.println("📝 Adding news - Action: " + action);
+        
+        // Validate
+        if (title == null || title.trim().isEmpty() ||
+            content == null || content.trim().isEmpty() ||
+            categoryId == null || categoryId.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng điền đầy đủ thông tin bắt buộc!");
+            loadFormData(request);
+            request.getRequestDispatcher("/views/phongvien/news-add.jsp").forward(request, response);
+            return;
+        }
+        
+        try {
+            // Handle file upload using FileUploadUtils
+            String imageUrl = null;
+            Part imagePart = request.getPart("imageFile");
+            if (imagePart != null && imagePart.getSize() > 0) {
+                try {
+                    imageUrl = FileUploadUtils.uploadNewsImage(request, imagePart);
+                } catch (ServletException e) {
+                    request.setAttribute("error", "Lỗi upload ảnh: " + e.getMessage());
+                    loadFormData(request);
+                    request.getRequestDispatcher("/views/phongvien/news-add.jsp").forward(request, response);
+                    return;
+                }
+            }
+            
+            News news = new News();
+            // Generate ID automatically - sẽ được tạo trong NewsDAO nếu null
+            news.setId(null);
+            news.setTitle(title.trim());
+            news.setContent(content.trim());
+            news.setImage(imageUrl);
+            news.setPostedDate(new java.sql.Date(System.currentTimeMillis()));
+            news.setAuthor(currentUser.getId());
+            news.setAuthorName(currentUser.getFullname() != null ? currentUser.getFullname() : currentUser.getUsername());
+            news.setViewCount(0);
+            news.setCategoryId(categoryId);
+            
+            // Determine published status
+            if ("submit".equals(action) || "1".equals(requestPublish)) {
+                news.setHome(0); // Pending approval - chờ duyệt
+            } else {
+                news.setHome(-1); // Draft - bản nháp
+            }
+            
+            boolean success = newsDAO.addNews(news);
+            System.out.println("📝 Add news result: " + success);
+            
+            if (success) {
+                String message = "";
+                if ("submit".equals(action) || "1".equals(requestPublish)) {
+                    message = "Tin tức đã được gửi để duyệt!";
+                } else {
+                    message = "Tin tức đã được lưu dưới dạng bản nháp!";
+                }
+                response.sendRedirect(request.getContextPath() + "/reporter/news?success=" + java.net.URLEncoder.encode(message, "UTF-8"));
+                return;
+            } else {
+                request.setAttribute("error", "Lỗi khi thêm tin tức! Vui lòng kiểm tra lại thông tin.");
+                loadFormData(request);
+                request.getRequestDispatcher("/views/phongvien/news-add.jsp").forward(request, response);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            loadFormData(request);
+            request.getRequestDispatcher("/views/phongvien/news-add.jsp").forward(request, response);
+        }
+    }
+    
+    private void deleteNews(HttpServletRequest request, HttpServletResponse response, String newsId, User currentUser) 
+            throws ServletException, IOException {
+        
+        try {
+            News news = newsDAO.getNewsById(newsId);
+            if (news == null || !news.getAuthor().equals(currentUser.getId())) {
+                request.setAttribute("error", "Không tìm thấy tin tức hoặc bạn không có quyền xóa!");
+                showMyNewsList(request, response, currentUser);
+                return;
+            }
+            
+            // Only allow deletion if news is not published
+            if (news.getHome() != null && news.getHome() == 1) {
+                request.setAttribute("error", "Không thể xóa tin tức đã được xuất bản!");
+                showMyNewsList(request, response, currentUser);
+                return;
+            }
+            
+            boolean success = newsDAO.deleteNews(newsId);
+            if (success) {
+                request.setAttribute("message", "Xóa tin tức thành công!");
+            } else {
+                request.setAttribute("error", "Lỗi khi xóa tin tức!");
+            }
+            
+            response.sendRedirect(request.getContextPath() + "/reporter/news?message=deleted");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            showMyNewsList(request, response, currentUser);
+        }
+    }
+    
+    private String saveUploadedFile(Part filePart, HttpServletRequest request) throws IOException {
+        String fileName = getFileName(filePart);
+        if (fileName == null || fileName.isEmpty()) {
+            return null;
+        }
+        
+        // Create unique filename
+        String fileExtension = fileName.substring(fileName.lastIndexOf("."));
+        String uniqueFileName = System.currentTimeMillis() + "_" + fileName.replaceAll("[^a-zA-Z0-9.]", "_");
+        
+        // Create upload directory if not exists
+        String uploadPath = request.getServletContext().getRealPath("/") + "uploads" + File.separator + "news";
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+        
+        // Save file
+        String filePath = uploadPath + File.separator + uniqueFileName;
+        filePart.write(filePath);
+        
+        // Return relative URL
+        return "/uploads/news/" + uniqueFileName;
+    }
+    
+    private String getFileName(Part part) {
+        String contentDisposition = part.getHeader("content-disposition");
+        if (contentDisposition != null) {
+            for (String content : contentDisposition.split(";")) {
+                if (content.trim().startsWith("filename")) {
+                    return content.substring(content.indexOf('=') + 1).trim().replace("\"", "");
+                }
+            }
+        }
+        return null;
+    }
+}   
+ 
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response, String newsId, User currentUser) 
+            throws ServletException, IOException {
+        
+        News news = newsDAO.getNewsById(newsId);
+        if (news == null || !news.getAuthor().equals(currentUser.getId())) {
+            request.setAttribute("error", "Không tìm thấy tin tức hoặc bạn không có quyền sửa!");
+            showMyNewsList(request, response, currentUser);
+            return;
+        }
+        
+        // Load categories cho form
+        List<Category> categories = categoryDAO.getAllCategories();
+        request.setAttribute("categories", categories);
+        request.setAttribute("news", news);
+        request.setAttribute("isEdit", true);
+        
+        request.getRequestDispatcher("/views/phongvien/news-edit.jsp").forward(request, response);
+    }
+    
+    private void viewNewsDetail(HttpServletRequest request, HttpServletResponse response, String newsId, User currentUser) 
+            throws ServletException, IOException {
+        
+        News news = newsDAO.getNewsById(newsId);
+        if (news == null || !news.getAuthor().equals(currentUser.getId())) {
+            request.setAttribute("error", "Không tìm thấy tin tức hoặc bạn không có quyền xem!");
+            showMyNewsList(request, response, currentUser);
+            return;
+        }
+        
+        request.setAttribute("news", news);
+        request.getRequestDispatcher("/views/phongvien/news-detail.jsp").forward(request, response);
+    }
+    
+    private void updateNews(HttpServletRequest request, HttpServletResponse response, String newsId, User currentUser) 
+            throws ServletException, IOException {
+        
+        // Kiểm tra quyền sở hữu
+        News existingNews = newsDAO.getNewsById(newsId);
+        if (existingNews == null || !existingNews.getAuthor().equals(currentUser.getId())) {
+            request.setAttribute("error", "Không tìm thấy tin tức hoặc bạn không có quyền sửa!");
+            showMyNewsList(request, response, currentUser);
+            return;
+        }
+        
+        String title = request.getParameter("title");
+        String summary = request.getParameter("summary");
+        String content = request.getParameter("content");
+        String categoryId = request.getParameter("categoryId");
+        String action = request.getParameter("action");
+        String requestPublish = request.getParameter("requestPublish");
+        
+        // Debug log
+        System.out.println("📝 Updating news - ID: " + newsId);
+        System.out.println("📝 Updating news - Title: " + title);
+        
+        // Validate
+        if (title == null || title.trim().isEmpty() ||
+            content == null || content.trim().isEmpty() ||
+            categoryId == null || categoryId.trim().isEmpty()) {
+            request.setAttribute("error", "Vui lòng điền đầy đủ thông tin bắt buộc!");
+            showEditForm(request, response, newsId, currentUser);
+            return;
+        }
+        
+        try {
+            // Handle file upload
+            String imageUrl = existingNews.getImage(); // Keep existing image by default
+            Part imagePart = request.getPart("imageFile");
+            if (imagePart != null && imagePart.getSize() > 0) {
+                try {
+                    // Delete old image if exists
+                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                        FileUploadUtils.deleteOldImage(request, imageUrl);
+                    }
+                    imageUrl = FileUploadUtils.uploadNewsImage(request, imagePart);
+                } catch (ServletException e) {
+                    request.setAttribute("error", "Lỗi upload ảnh: " + e.getMessage());
+                    showEditForm(request, response, newsId, currentUser);
+                    return;
+                }
+            }
+            
+            // Update news object
+            existingNews.setTitle(title.trim());
+            existingNews.setContent(content.trim());
+            existingNews.setImage(imageUrl);
+            existingNews.setCategoryId(categoryId);
+            
+            // Update status based on action
+            if ("submit".equals(action) || "1".equals(requestPublish)) {
+                existingNews.setHome(0); // Pending approval
+            } else {
+                existingNews.setHome(-1); // Draft
+            }
+            
+            boolean success = newsDAO.updateNews(existingNews);
+            if (success) {
+                if ("submit".equals(action) || "1".equals(requestPublish)) {
+                    request.setAttribute("message", "Tin tức đã được cập nhật và gửi để duyệt!");
+                } else {
+                    request.setAttribute("message", "Tin tức đã được cập nhật!");
+                }
+                response.sendRedirect(request.getContextPath() + "/reporter/news?message=updated");
+                return;
+            } else {
+                request.setAttribute("error", "Lỗi khi cập nhật tin tức!");
+                showEditForm(request, response, newsId, currentUser);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            showEditForm(request, response, newsId, currentUser);
+        }
+    }
