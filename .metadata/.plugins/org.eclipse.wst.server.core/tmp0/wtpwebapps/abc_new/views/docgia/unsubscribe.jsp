@@ -1,11 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<fmt:setLocale value="${sessionScope.lang != null ? sessionScope.lang : 'vi'}" scope="request" />
+<fmt:setBundle basename="global" scope="request" />
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="${sessionScope.lang != null ? sessionScope.lang : 'vi'}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hủy đăng ký Newsletter - ABC News</title>
+    <title><fmt:message key="newsletter.unsubscribe.title" /> - <fmt:message key="app.title" /></title>
     <style>
         * {
             margin: 0;
