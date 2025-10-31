@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-@WebServlet({"/home", "/", "/news/*", "/category/*", "/searchs"})
+@WebServlet({"/home", "/", "/news/*", "/category/*"})
 public class HomeServlet extends HttpServlet {
     private NewsDAO newsDAO = new NewsDAO();
     private CategoryDAO categoryDAO = new CategoryDAO();
@@ -34,9 +34,6 @@ public class HomeServlet extends HttpServlet {
             } else if (servletPath.equals("/category") && pathInfo != null) {
                 // Xử lý trang danh sách tin theo loại: /category/{id}
                 handleCategoryNews(request, response, pathInfo);
-            } else if (servletPath.equals("/search")) {
-                // Xử lý tìm kiếm
-                handleSearch(request, response);
             } else {
                 // Trang chủ
                 handleHomePage(request, response);
@@ -68,6 +65,10 @@ public class HomeServlet extends HttpServlet {
         List<News> latestNews = newsDAO.getLatestNews(5);
         System.out.println("⏰ Latest news count: " + latestNews.size());
         
+        // Lấy tất cả tin tức (giới hạn 20 tin để hiển thị)
+        List<News> allNews = newsDAO.getAllApprovedNews(20);
+        System.out.println("📰 All news count: " + allNews.size());
+        
         // Lấy 5 tin tức đã xem gần đây từ session
         List<News> recentViewedNews = getRecentViewedNews(request);
         
@@ -78,6 +79,7 @@ public class HomeServlet extends HttpServlet {
         request.setAttribute("featuredNews", featuredNews);
         request.setAttribute("hotNews", hotNews);
         request.setAttribute("latestNews", latestNews);
+        request.setAttribute("allNews", allNews);
         request.setAttribute("recentViewedNews", recentViewedNews);
         request.setAttribute("categories", categories);
         request.setAttribute("pageTitle", "Trang chủ - ABC News");
@@ -240,58 +242,5 @@ public class HomeServlet extends HttpServlet {
         session.setAttribute("recentViewedNews", recentViewedIds);
     }
     
-    /**
-     * Xử lý tìm kiếm tin tức
-     */
-    private void handleSearch(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
-        String keyword = request.getParameter("q");
-        String pageStr = request.getParameter("page");
-        
-        if (keyword == null || keyword.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/home");
-            return;
-        }
-        
-        keyword = keyword.trim();
-        
-        // Phân trang
-        int page = 1;
-        int pageSize = 10;
-        
-        try {
-            if (pageStr != null) {
-                page = Integer.parseInt(pageStr);
-            }
-        } catch (NumberFormatException e) {
-            page = 1;
-        }
-        
-        // Tìm kiếm tin tức
-        List<News> searchResults = newsDAO.searchNews(keyword);
-        
-        // Tính toán phân trang
-        int totalNews = searchResults.size();
-        int totalPages = (int) Math.ceil((double) totalNews / pageSize);
-        int startIndex = (page - 1) * pageSize;
-        int endIndex = Math.min(startIndex + pageSize, totalNews);
-        
-        List<News> pagedResults = totalNews > 0 ? searchResults.subList(startIndex, endIndex) : new ArrayList<>();
-        
-        // Lấy danh sách danh mục cho menu
-        List<Category> categories = categoryDAO.getAllCategories();
-        
-        // Đặt dữ liệu vào request
-        request.setAttribute("searchResults", pagedResults);
-        request.setAttribute("searchKeyword", keyword);
-        request.setAttribute("categories", categories);
-        request.setAttribute("currentPage", page);
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("totalNews", totalNews);
-        request.setAttribute("pageTitle", "Tìm kiếm: " + keyword + " - ABC News");
-        
-        // Forward đến trang kết quả tìm kiếm
-        request.getRequestDispatcher("/views/docgia/search-results.jsp").forward(request, response);
-    }
+
 }
