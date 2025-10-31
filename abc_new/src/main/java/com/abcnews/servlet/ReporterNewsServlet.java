@@ -301,7 +301,7 @@ public class ReporterNewsServlet extends HttpServlet {
             if (success) {
                 String message = "";
                 if ("submit".equals(action) || "1".equals(requestPublish)) {
-                    message = "Tin tức đã được gửi để duyệt!";
+                    message = "Tin tức đã được gửi để duyệt! Email sẽ được gửi khi admin duyệt bài.";
                 } else {
                     message = "Tin tức đã được lưu thành công!";
                 }
