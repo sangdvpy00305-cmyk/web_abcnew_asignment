@@ -1,310 +1,193 @@
 package com.abcnews.utils;
 
 import java.util.Properties;
-import java.util.Date;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
 
 public class EmailService {
     
-    // ===== CẤU HÌNH EMAIL CỦA BẠN - ĐIỀN VÀO ĐÂY =====
-    private static final String FROM_EMAIL = "sangdvpy00305@gmail.com";  // Thay bằng email của bạn
-    private static final String FROM_PASSWORD = "jvto ubse zkkv ibed";   // Thay bằng App Password của bạn
-    private static final String FROM_NAME = "ABC News";
+    // Email gửi đi - THAY BẰNG EMAIL CỦA BẠN
+    private static final String FROM_EMAIL = "sangdvpy00305@gmail.com";
+    private static final String FROM_PASSWORD = "jvto ubse zkkv ibed";
     
-    // SMTP Settings cho Gmail
-    private static final String SMTP_HOST = "smtp.gmail.com";
-    private static final String SMTP_PORT = "587";
-    
-    // Email configuration properties
-    private static Properties emailConfig;
-    
-    static {
-        emailConfig = new Properties();
+    /**
+     * Gửi email thông báo có tin mới với template đẹp
+     */
+    public static void sendNewNewsEmail(String toEmail) {
         try {
-            InputStream input = EmailService.class.getClassLoader().getResourceAsStream("email.properties");
-            if (input != null) {
-                emailConfig.load(input);
+            String subject = "🔥 Tin tức mới từ ABC News";
+            String htmlContent = createNewNewsEmailTemplate();
+            
+            boolean success = sendHtmlEmail(toEmail, subject, htmlContent);
+            if (success) {
+                System.out.println("✅ Đã gửi email thông báo tin mới đến: " + toEmail);
             } else {
-                // Default configuration if file not found
-                emailConfig.setProperty("email.username", FROM_EMAIL);
-                emailConfig.setProperty("email.password", FROM_PASSWORD);
-                emailConfig.setProperty("email.from.address", FROM_EMAIL);
-                emailConfig.setProperty("email.from.name", FROM_NAME);
-                emailConfig.setProperty("smtp.host", SMTP_HOST);
-                emailConfig.setProperty("smtp.port", SMTP_PORT);
-                emailConfig.setProperty("smtp.auth", "true");
-                emailConfig.setProperty("smtp.starttls.enable", "true");
+                System.err.println("❌ Lỗi gửi email thông báo tin mới đến: " + toEmail);
             }
+            
         } catch (Exception e) {
-            System.err.println("Lỗi load email config: " + e.getMessage());
-            // Set default values
-            emailConfig.setProperty("email.username", FROM_EMAIL);
-            emailConfig.setProperty("email.password", FROM_PASSWORD);
-            emailConfig.setProperty("email.from.address", FROM_EMAIL);
-            emailConfig.setProperty("email.from.name", FROM_NAME);
-            emailConfig.setProperty("smtp.host", SMTP_HOST);
-            emailConfig.setProperty("smtp.port", SMTP_PORT);
-            emailConfig.setProperty("smtp.auth", "true");
-            emailConfig.setProperty("smtp.starttls.enable", "true");
+            System.err.println("❌ Lỗi gửi email thông báo: " + e.getMessage());
         }
     }
     
     /**
-     * Gửi email xác nhận đăng ký newsletter
+     * Tạo template HTML cho email thông báo tin mới
      */
-    public static boolean sendWelcomeEmail(String toEmail) {
-        String subject = "Chào mừng bạn đến với ABC News!";
-        
-        String htmlContent = buildWelcomeEmailContent(toEmail);
-        
-        return sendEmail(toEmail, subject, htmlContent, true);
+    private static String createNewNewsEmailTemplate() {
+        return "<!DOCTYPE html>" +
+            "<html>" +
+            "<head>" +
+            "<meta charset='UTF-8'>" +
+            "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+            "<title>ABC News - Tin tức mới</title>" +
+            "</head>" +
+            "<body style='font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background-color: #f4f4f4;'>" +
+            "<div style='max-width: 600px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);'>" +
+            
+            "<!-- Header -->" +
+            "<div style='text-align: center; padding: 20px 0; border-bottom: 2px solid #dc3545;'>" +
+            "<h1 style='color: #dc3545; margin: 0; font-size: 28px;'>" +
+            "<span style='font-size: 32px;'>📰</span> ABC News" +
+            "</h1>" +
+            "<p style='color: #666; margin: 5px 0 0 0;'>Trang tin tức hàng đầu Việt Nam</p>" +
+            "</div>" +
+            
+            "<!-- Content -->" +
+            "<div style='padding: 30px 0;'>" +
+            "<h2 style='color: #333; text-align: center; margin-bottom: 20px;'>" +
+            "🔥 Có tin tức mới đã được đăng!" +
+            "</h2>" +
+            "<p style='color: #555; font-size: 16px; text-align: center; margin-bottom: 30px;'>" +
+            "Chúng tôi vừa đăng tải những tin tức mới nhất. Hãy truy cập ngay để không bỏ lỡ thông tin quan trọng!" +
+            "</p>" +
+            
+            "<!-- CTA Button -->" +
+            "<div style='text-align: center; margin: 30px 0;'>" +
+            "<a href='http://localhost:7070/abc-new/home' " +
+            "style='display: inline-block; background-color: #dc3545; color: white; padding: 15px 30px; " +
+            "text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;'>" +
+            "📖 Đọc tin tức ngay" +
+            "</a>" +
+            "</div>" +
+            "</div>" +
+            
+            "<!-- Footer -->" +
+            "<div style='border-top: 1px solid #eee; padding-top: 20px; text-align: center; color: #666; font-size: 14px;'>" +
+            "<p>Bạn nhận được email này vì đã đăng ký nhận tin tức từ ABC News.</p>" +
+            "<p>" +
+            "<a href='http://localhost:7070/abc-new/newsletter?action=unsubscribe&email={{EMAIL}}' " +
+            "style='color: #dc3545; text-decoration: none;'>Hủy đăng ký</a> | " +
+            "<a href='http://localhost:7070/abc-new/home' style='color: #dc3545; text-decoration: none;'>Trang chủ</a>" +
+            "</p>" +
+            "<p style='margin-top: 15px; color: #999;'>" +
+            "&copy; 2024 ABC News. All rights reserved." +
+            "</p>" +
+            "</div>" +
+            
+            "</div>" +
+            "</body>" +
+            "</html>";
     }
     
     /**
-     * Gửi newsletter với nội dung tin tức
+     * Gửi email newsletter với tiêu đề và nội dung tùy chỉnh
      */
     public static boolean sendNewsletterEmail(String toEmail, String subject, String content) {
-        String htmlContent = buildNewsletterContent(toEmail, subject, content);
-        
-        return sendEmail(toEmail, subject, htmlContent, true);
-    }
-    
-    /**
-     * Gửi email thông báo hủy đăng ký
-     */
-    public static boolean sendUnsubscribeConfirmation(String toEmail) {
-        String subject = "Xác nhận hủy đăng ký - ABC News";
-        String htmlContent = buildUnsubscribeContent(toEmail);
-        
-        return sendEmail(toEmail, subject, htmlContent, true);
-    }
-    
-    /**
-     * Gửi email cơ bản
-     */
-    public static boolean sendEmail(String toEmail, String subject, String content, boolean isHtml) {
         try {
-            // Kiểm tra cấu hình
-            String username = emailConfig.getProperty("email.username");
-            String password = emailConfig.getProperty("email.password");
-            
-            if (username == null || password == null || 
-                username.equals("your-email@gmail.com") || 
-                password.equals("your-app-password")) {
-                System.err.println("⚠️ CẢNH BÁO: Chưa cấu hình email! Vui lòng cập nhật file email.properties");
-                return false;
-            }
-            
-            // Tạo properties cho SMTP
-            Properties props = new Properties();
-            props.put("mail.smtp.host", emailConfig.getProperty("smtp.host", "smtp.gmail.com"));
-            props.put("mail.smtp.port", emailConfig.getProperty("smtp.port", "587"));
-            props.put("mail.smtp.auth", emailConfig.getProperty("smtp.auth", "true"));
-            props.put("mail.smtp.starttls.enable", emailConfig.getProperty("smtp.starttls.enable", "true"));
-            
-            // Tạo session với authentication
-            Session session = Session.getInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(username, password);
-                }
-            });
-            
-            // Tạo message
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(
-                emailConfig.getProperty("email.from.address", username),
-                emailConfig.getProperty("email.from.name", "ABC News")
-            ));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            message.setSubject(subject);
-            message.setSentDate(new Date());
-            
-            if (isHtml) {
-                message.setContent(content, "text/html; charset=utf-8");
-            } else {
-                message.setText(content);
-            }
-            
-            // Gửi email
-            Transport.send(message);
-            System.out.println("✅ Đã gửi email thành công đến: " + toEmail);
-            return true;
+            String htmlContent = createNewsletterTemplate(subject, content, toEmail);
+            return sendHtmlEmail(toEmail, subject, htmlContent);
             
         } catch (Exception e) {
-            System.err.println("❌ Lỗi gửi email đến " + toEmail + ": " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("❌ Lỗi gửi newsletter đến " + toEmail + ": " + e.getMessage());
             return false;
         }
     }
     
     /**
-     * Tạo nội dung email chào mừng
+     * Gửi email HTML chung
      */
-    private static String buildWelcomeEmailContent(String email) {
-        String unsubscribeUrl = "http://localhost:8080/abc_new/unsubscribe?email=" + 
-                               URLEncoder.encode(email, StandardCharsets.UTF_8);
-        
+    private static boolean sendHtmlEmail(String toEmail, String subject, String htmlContent) {
+        try {
+            // Cấu hình SMTP
+            Properties props = new Properties();
+            props.setProperty("mail.smtp.auth", "true");
+            props.setProperty("mail.smtp.starttls.enable", "true");
+            props.setProperty("mail.smtp.host", "smtp.gmail.com");
+            props.setProperty("mail.smtp.port", "587");
+            props.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
+            
+            // Tạo session
+            Session session = Session.getInstance(props, new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(FROM_EMAIL, FROM_PASSWORD);
+                }
+            });
+            
+            // Tạo email
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(FROM_EMAIL, "ABC News"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
+            message.setSubject(subject);
+            
+            // Replace placeholder với email thực
+            htmlContent = htmlContent.replace("{{EMAIL}}", toEmail);
+            
+            message.setContent(htmlContent, "text/html; charset=utf-8");
+            
+            // Gửi email
+            Transport.send(message);
+            return true;
+            
+        } catch (Exception e) {
+            System.err.println("❌ Lỗi gửi email HTML: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Tạo template HTML cho newsletter tùy chỉnh
+     */
+    private static String createNewsletterTemplate(String subject, String content, String email) {
         return "<!DOCTYPE html>" +
             "<html>" +
             "<head>" +
-                "<meta charset=\"UTF-8\">" +
-                "<style>" +
-                    "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
-                    ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
-                    ".header { background: linear-gradient(135deg, #c41e3a, #a01729); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }" +
-                    ".content { background: white; padding: 30px; border: 1px solid #ddd; }" +
-                    ".footer { background: #f8f9fa; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; font-size: 12px; color: #666; }" +
-                    ".button { display: inline-block; background: #c41e3a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 10px 0; }" +
-                    ".logo { font-size: 2rem; font-weight: bold; margin-bottom: 10px; }" +
-                "</style>" +
+            "<meta charset='UTF-8'>" +
+            "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+            "<title>" + subject + "</title>" +
             "</head>" +
-            "<body>" +
-                "<div class=\"container\">" +
-                    "<div class=\"header\">" +
-                        "<div class=\"logo\">📰 ABC NEWS</div>" +
-                        "<h2>Chào mừng bạn đến với ABC News!</h2>" +
-                    "</div>" +
-                    "<div class=\"content\">" +
-                        "<h3>Xin chào!</h3>" +
-                        "<p>Cảm ơn bạn đã đăng ký nhận tin tức từ <strong>ABC News</strong>!</p>" +
-                        "<p>Từ bây giờ, bạn sẽ nhận được:</p>" +
-                        "<ul>" +
-                            "<li>📰 Tin tức mới nhất hàng ngày</li>" +
-                            "<li>🔥 Tin nóng và sự kiện quan trọng</li>" +
-                            "<li>📊 Phân tích chuyên sâu</li>" +
-                            "<li>🎯 Nội dung được cá nhân hóa</li>" +
-                        "</ul>" +
-                        "<p>Email đăng ký: <strong>" + email + "</strong></p>" +
-                        "<p>Chúng tôi cam kết:</p>" +
-                        "<ul>" +
-                            "<li>✅ Chỉ gửi nội dung chất lượng cao</li>" +
-                            "<li>✅ Không spam, không bán thông tin</li>" +
-                            "<li>✅ Bạn có thể hủy đăng ký bất cứ lúc nào</li>" +
-                        "</ul>" +
-                        "<div style=\"text-align: center; margin: 30px 0;\">" +
-                            "<a href=\"http://localhost:8080/abc_new/home\" class=\"button\">" +
-                                "🏠 Truy cập ABC News ngay" +
-                            "</a>" +
-                        "</div>" +
-                        "<p>Cảm ơn bạn đã tin tưởng ABC News!</p>" +
-                        "<p><strong>Đội ngũ ABC News</strong></p>" +
-                    "</div>" +
-                    "<div class=\"footer\">" +
-                        "<p>Bạn nhận được email này vì đã đăng ký newsletter tại ABC News.</p>" +
-                        "<p><a href=\"" + unsubscribeUrl + "\">Hủy đăng ký</a> | " +
-                           "<a href=\"http://localhost:8080/abc_new/home\">Trang chủ</a></p>" +
-                        "<p>&copy; 2024 ABC News. All rights reserved.</p>" +
-                    "</div>" +
-                "</div>" +
+            "<body style='font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0; background-color: #f4f4f4;'>" +
+            "<div style='max-width: 600px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);'>" +
+            
+            "<!-- Header -->" +
+            "<div style='text-align: center; padding: 20px 0; border-bottom: 2px solid #28a745;'>" +
+            "<h1 style='color: #28a745; margin: 0; font-size: 28px;'>" +
+            "<span style='font-size: 32px;'>📧</span> ABC News Newsletter" +
+            "</h1>" +
+            "</div>" +
+            
+            "<!-- Content -->" +
+            "<div style='padding: 30px 0;'>" +
+            "<h2 style='color: #333; margin-bottom: 20px;'>" + subject + "</h2>" +
+            "<div style='color: #555; font-size: 16px; line-height: 1.8;'>" +
+            content.replace("\n", "<br>") +
+            "</div>" +
+            "</div>" +
+            
+            "<!-- Footer -->" +
+            "<div style='border-top: 1px solid #eee; padding-top: 20px; text-align: center; color: #666; font-size: 14px;'>" +
+            "<p>Bạn nhận được email này vì đã đăng ký newsletter của ABC News.</p>" +
+            "<p>" +
+            "<a href='http://localhost:7070/abc-new/newsletter?action=unsubscribe&email=" + email + "' " +
+            "style='color: #28a745; text-decoration: none;'>Hủy đăng ký</a> | " +
+            "<a href='http://localhost:7070/abc-new/home' style='color: #28a745; text-decoration: none;'>Trang chủ</a>" +
+            "</p>" +
+            "<p style='margin-top: 15px; color: #999;'>" +
+            "&copy; 2024 ABC News. All rights reserved." +
+            "</p>" +
+            "</div>" +
+            
+            "</div>" +
             "</body>" +
             "</html>";
-    }
-    
-    /**
-     * Tạo nội dung newsletter
-     */
-    private static String buildNewsletterContent(String email, String subject, String content) {
-        String unsubscribeUrl = "http://localhost:8080/abc_new/unsubscribe?email=" + 
-                               URLEncoder.encode(email, StandardCharsets.UTF_8);
-        
-        return "<!DOCTYPE html>" +
-            "<html>" +
-            "<head>" +
-                "<meta charset=\"UTF-8\">" +
-                "<style>" +
-                    "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
-                    ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
-                    ".header { background: linear-gradient(135deg, #c41e3a, #a01729); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }" +
-                    ".content { background: white; padding: 30px; border: 1px solid #ddd; }" +
-                    ".footer { background: #f8f9fa; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; font-size: 12px; color: #666; }" +
-                    ".logo { font-size: 1.5rem; font-weight: bold; }" +
-                "</style>" +
-            "</head>" +
-            "<body>" +
-                "<div class=\"container\">" +
-                    "<div class=\"header\">" +
-                        "<div class=\"logo\">📰 ABC NEWS</div>" +
-                        "<h3>" + subject + "</h3>" +
-                    "</div>" +
-                    "<div class=\"content\">" +
-                        content +
-                    "</div>" +
-                    "<div class=\"footer\">" +
-                        "<p>Bạn nhận được email này vì đã đăng ký newsletter tại ABC News.</p>" +
-                        "<p><a href=\"" + unsubscribeUrl + "\">Hủy đăng ký</a> | " +
-                           "<a href=\"http://localhost:8080/abc_new/home\">Trang chủ</a></p>" +
-                        "<p>&copy; 2024 ABC News. All rights reserved.</p>" +
-                    "</div>" +
-                "</div>" +
-            "</body>" +
-            "</html>";
-    }
-    
-    /**
-     * Tạo nội dung email hủy đăng ký
-     */
-    private static String buildUnsubscribeContent(String email) {
-        return "<!DOCTYPE html>" +
-            "<html>" +
-            "<head>" +
-                "<meta charset=\"UTF-8\">" +
-                "<style>" +
-                    "body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }" +
-                    ".container { max-width: 600px; margin: 0 auto; padding: 20px; }" +
-                    ".header { background: #6c757d; color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }" +
-                    ".content { background: white; padding: 30px; border: 1px solid #ddd; }" +
-                    ".footer { background: #f8f9fa; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; font-size: 12px; color: #666; }" +
-                    ".logo { font-size: 2rem; font-weight: bold; margin-bottom: 10px; }" +
-                "</style>" +
-            "</head>" +
-            "<body>" +
-                "<div class=\"container\">" +
-                    "<div class=\"header\">" +
-                        "<div class=\"logo\">📰 ABC NEWS</div>" +
-                        "<h2>Xác nhận hủy đăng ký</h2>" +
-                    "</div>" +
-                    "<div class=\"content\">" +
-                        "<h3>Chúng tôi rất tiếc!</h3>" +
-                        "<p>Email <strong>" + email + "</strong> đã được hủy khỏi danh sách nhận tin tức ABC News.</p>" +
-                        "<p>Bạn sẽ không còn nhận được email newsletter từ chúng tôi nữa.</p>" +
-                        "<p>Nếu bạn thay đổi ý định, có thể đăng ký lại bất cứ lúc nào tại " +
-                           "<a href=\"http://localhost:8080/abc_new/home\">trang chủ ABC News</a>.</p>" +
-                        "<p>Cảm ơn bạn đã đồng hành cùng ABC News!</p>" +
-                        "<p><strong>Đội ngũ ABC News</strong></p>" +
-                    "</div>" +
-                    "<div class=\"footer\">" +
-                        "<p><a href=\"http://localhost:8080/abc_new/home\">Quay lại ABC News</a></p>" +
-                        "<p>&copy; 2024 ABC News. All rights reserved.</p>" +
-                    "</div>" +
-                "</div>" +
-            "</body>" +
-            "</html>";
-    }
-    
-    /**
-     * Kiểm tra cấu hình email
-     */
-    public static boolean isEmailConfigured() {
-        String username = emailConfig.getProperty("email.username");
-        String password = emailConfig.getProperty("email.password");
-        
-        return username != null && password != null && 
-               !username.equals("your-email@gmail.com") && 
-               !password.equals("your-app-password");
-    }
-    
-    /**
-     * Lấy thông tin cấu hình email (để debug)
-     */
-    public static String getEmailConfigInfo() {
-        return "SMTP Host: " + emailConfig.getProperty("smtp.host") + 
-               ", Port: " + emailConfig.getProperty("smtp.port") +
-               ", Username: " + emailConfig.getProperty("email.username") +
-               ", Configured: " + isEmailConfigured();
     }
 }
