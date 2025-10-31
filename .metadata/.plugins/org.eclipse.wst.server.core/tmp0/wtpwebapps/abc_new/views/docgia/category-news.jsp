@@ -1,8 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-    <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-        <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-            <!DOCTYPE html>
-            <html lang="vi">
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<fmt:setLocale value="${sessionScope.lang != null ? sessionScope.lang : 'vi'}" scope="request" />
+<fmt:setBundle basename="global" scope="request" />
+<!DOCTYPE html>
+<html lang="${sessionScope.lang != null ? sessionScope.lang : 'vi'}">
 
             <head>
                 <meta charset="UTF-8">
