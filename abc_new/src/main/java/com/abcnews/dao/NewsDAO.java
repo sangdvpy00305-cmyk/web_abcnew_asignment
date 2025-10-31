@@ -53,6 +53,30 @@ public class NewsDAO {
         return newsList;
     }
     
+    // Lấy tất cả tin tức đã duyệt với giới hạn (cho trang chủ)
+    public List<News> getAllApprovedNews(int limit) {
+        List<News> newsList = new ArrayList<>();
+        String sql = "SELECT " + (limit > 0 ? "TOP " + limit + " " : "") +
+                    "n.*, u.Fullname as AuthorName, c.Name as CategoryName " +
+                    "FROM NEWS n " +
+                    "LEFT JOIN USERS u ON n.Author = u.Id " +
+                    "LEFT JOIN CATEGORIES c ON n.CategoryId = c.Id " +
+                    "WHERE n.ApprovalStatus = 1 " +
+                    "ORDER BY n.PostedDate DESC";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            while (rs.next()) {
+                newsList.add(mapResultSetToNews(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi lấy tất cả tin tức đã duyệt: " + e.getMessage());
+        }
+        return newsList;
+    }
+    
     // Lấy tin tức trang chủ (đã duyệt và được đánh dấu Home = 1)
     public List<News> getHomePageNews() {
         List<News> newsList = new ArrayList<>();
