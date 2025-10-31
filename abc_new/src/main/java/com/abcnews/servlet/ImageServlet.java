@@ -19,21 +19,19 @@ public class ImageServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String pathInfo = request.getPathInfo();
-        System.out.println("🖼️ ImageServlet - Request URI: " + request.getRequestURI());
-        System.out.println("🖼️ ImageServlet - pathInfo: " + pathInfo);
         
         if (pathInfo == null || pathInfo.equals("/")) {
-            System.out.println("❌ ImageServlet - No path info");
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         
         // Lấy đường dẫn file
         String filePath = request.getServletContext().getRealPath("/uploads" + pathInfo);
-        System.out.println("🖼️ ImageServlet - filePath: " + filePath);
-        
         File file = new File(filePath);
-        System.out.println("🖼️ ImageServlet - file exists: " + file.exists() + ", isFile: " + file.isFile());
+        
+        System.out.println("🖼️ ImageServlet - Requested path: " + pathInfo);
+        System.out.println("🖼️ ImageServlet - Full file path: " + filePath);
+        System.out.println("🖼️ ImageServlet - File exists: " + file.exists());
         
         if (!file.exists() || !file.isFile()) {
             System.out.println("❌ ImageServlet - File not found: " + filePath);
@@ -44,12 +42,27 @@ public class ImageServlet extends HttpServlet {
         // Xác định content type
         String contentType = getServletContext().getMimeType(file.getName());
         if (contentType == null) {
-            contentType = "application/octet-stream";
+            // Xác định content type dựa trên extension
+            String fileName = file.getName().toLowerCase();
+            if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+                contentType = "image/jpeg";
+            } else if (fileName.endsWith(".png")) {
+                contentType = "image/png";
+            } else if (fileName.endsWith(".gif")) {
+                contentType = "image/gif";
+            } else if (fileName.endsWith(".webp")) {
+                contentType = "image/webp";
+            } else {
+                contentType = "application/octet-stream";
+            }
         }
-        System.out.println("🖼️ ImageServlet - contentType: " + contentType);
         
         response.setContentType(contentType);
         response.setContentLength((int) file.length());
+        
+        // Set cache headers for better performance
+        response.setHeader("Cache-Control", "public, max-age=3600");
+        response.setDateHeader("Expires", System.currentTimeMillis() + 3600000);
         
         // Gửi file
         try (FileInputStream in = new FileInputStream(file);
@@ -60,9 +73,9 @@ public class ImageServlet extends HttpServlet {
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
-            System.out.println("✅ ImageServlet - File served successfully");
+            System.out.println("✅ ImageServlet - Successfully served: " + pathInfo);
         } catch (Exception e) {
-            System.out.println("❌ ImageServlet - Error serving file: " + e.getMessage());
+            System.err.println("❌ ImageServlet - Error serving file: " + e.getMessage());
             e.printStackTrace();
         }
     }
