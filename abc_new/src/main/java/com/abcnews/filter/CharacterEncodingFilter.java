@@ -8,6 +8,7 @@ import java.io.IOException;
 
 /**
  * Filter để set UTF-8 encoding cho tất cả request và response
+ * Đã được tối ưu để tránh conflict với AJAX requests
  */
 public class CharacterEncodingFilter implements Filter {
     
@@ -25,26 +26,14 @@ public class CharacterEncodingFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         
-        // Set request encoding
+        // Set request encoding if not already set
         if (request.getCharacterEncoding() == null) {
             request.setCharacterEncoding(encoding);
         }
         
-        // Set response encoding
+        // Set response encoding but DON'T set Content-Type
+        // Let servlets handle their own Content-Type
         response.setCharacterEncoding(encoding);
-        
-        // Set content type for HTML responses
-        if (response instanceof HttpServletResponse) {
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            
-            // Chỉ set content type cho HTML responses
-            String requestURI = httpRequest.getRequestURI();
-            if (requestURI.endsWith(".jsp") || requestURI.contains("/views/") || 
-                (!requestURI.contains(".") && !requestURI.contains("/api/"))) {
-                httpResponse.setContentType("text/html; charset=" + encoding);
-            }
-        }
         
         // Continue with the filter chain
         chain.doFilter(request, response);
