@@ -347,8 +347,7 @@
                                 </button>
                             </div>
                         </div>
-
-                        <div class="back-home">
+                    <div class="back-home">
                             <a href="${pageContext.request.contextPath}/home">← Quay về trang chủ ABC
                                 News</a>
                         </div>
