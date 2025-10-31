@@ -1,4 +1,4 @@
-package com.abcnews.model;
+ package com.abcnews.model;
 
 import java.sql.Timestamp;
 
