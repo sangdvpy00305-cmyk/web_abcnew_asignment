@@ -57,6 +57,9 @@ public class NewsletterDAO {
     
     // Lấy newsletter theo email
     public Newsletter getNewsletterByEmail(String email) {
+        System.out.println("📧 NewsletterDAO - Getting newsletter by email: " + email);
+        
+        // Thử cấu trúc database đơn giản trước (chỉ Email và Enabled)
         String sql = "SELECT Email, Enabled FROM NEWSLETTERS WHERE Email = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
@@ -69,15 +72,20 @@ public class NewsletterDAO {
                 Newsletter newsletter = new Newsletter();
                 newsletter.setEmail(rs.getString("Email"));
                 newsletter.setEnabled(rs.getInt("Enabled"));
+                System.out.println("📧 NewsletterDAO - Found newsletter: enabled=" + newsletter.getEnabled());
                 return newsletter;
+            } else {
+                System.out.println("📧 NewsletterDAO - No newsletter found for email: " + email);
             }
             
         } catch (SQLException e) {
-            System.err.println("Lỗi lấy newsletter: " + e.getMessage());
+            System.err.println("❌ NewsletterDAO - SQL Exception in getNewsletterByEmail: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
     }
+    
+
     
     // Alias method for servlet compatibility
     public Newsletter getByEmail(String email) {
@@ -108,26 +116,52 @@ public class NewsletterDAO {
     
     // Thêm newsletter mới
     public boolean addNewsletter(Newsletter newsletter) {
+        System.out.println("📧 NewsletterDAO - Adding newsletter: " + newsletter.getEmail());
+        
+        // Kiểm tra email đã tồn tại trước khi insert
+        Newsletter existing = getNewsletterByEmail(newsletter.getEmail());
+        if (existing != null) {
+            System.out.println("📧 NewsletterDAO - Email already exists, updating status instead");
+            return updateNewsletterStatus(newsletter.getEmail(), 1);
+        }
+        
+        // Sử dụng cấu trúc đơn giản: chỉ Email và Enabled
         String sql = "INSERT INTO NEWSLETTERS (Email, Enabled) VALUES (?, ?)";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
+            int enabled = newsletter.getEnabled() != null ? newsletter.getEnabled() : 1;
+            
+            System.out.println("📧 NewsletterDAO - Parameters: email=" + newsletter.getEmail() + ", enabled=" + enabled);
+            
             stmt.setString(1, newsletter.getEmail());
-            stmt.setInt(2, newsletter.getEnabled() != null ? newsletter.getEnabled() : 1);
+            stmt.setInt(2, enabled);
             
             int result = stmt.executeUpdate();
+            System.out.println("📧 NewsletterDAO - Insert result: " + result + " rows affected");
             return result > 0;
             
         } catch (SQLException e) {
-            System.err.println("Lỗi thêm newsletter: " + e.getMessage());
+            System.err.println("❌ NewsletterDAO - SQL Exception: " + e.getMessage());
+            
+            // Nếu lỗi duplicate key, thử update thay vì insert
+            if (e.getMessage().contains("duplicate") || e.getMessage().contains("UNIQUE") || e.getMessage().contains("PRIMARY KEY")) {
+                System.out.println("📧 NewsletterDAO - Duplicate key error, trying to update existing record");
+                return updateNewsletterStatus(newsletter.getEmail(), 1);
+            }
+            
             e.printStackTrace();
             return false;
         }
     }
     
+
+    
     // Cập nhật trạng thái newsletter
     public boolean updateNewsletterStatus(String email, Integer enabled) {
+        System.out.println("📧 NewsletterDAO - Updating newsletter status: " + email + " -> " + enabled);
+        
         String sql = "UPDATE NEWSLETTERS SET Enabled = ? WHERE Email = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
@@ -137,10 +171,11 @@ public class NewsletterDAO {
             stmt.setString(2, email);
             
             int result = stmt.executeUpdate();
+            System.out.println("📧 NewsletterDAO - Update result: " + result + " rows affected");
             return result > 0;
             
         } catch (SQLException e) {
-            System.err.println("Lỗi cập nhật newsletter: " + e.getMessage());
+            System.err.println("❌ NewsletterDAO - Error updating newsletter: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
