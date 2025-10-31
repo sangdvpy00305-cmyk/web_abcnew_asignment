@@ -1,8 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<fmt:setLocale value="${sessionScope.lang != null ? sessionScope.lang : 'vi'}" scope="request" />
+<fmt:setBundle basename="global" scope="request" />
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="${sessionScope.lang != null ? sessionScope.lang : 'vi'}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,51 +22,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="${pageContext.request.contextPath}/home">
-                <i class="fas fa-newspaper"></i> ABC News
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/home">
-                            <i class="fas fa-home"></i> Trang chủ
-                        </a>
-                    </li>
-                    <c:forEach var="category" items="${categories}">
-                        <li class="nav-item">
-                            <a class="nav-link" href="${pageContext.request.contextPath}/category/${category.id}">
-                                ${category.name}
-                            </a>
-                        </li>
-                    </c:forEach>
-                </ul>
-                
-                <!-- Search Form -->
-                <form class="d-flex me-3" action="${pageContext.request.contextPath}/search" method="get">
-                    <input class="form-control me-2" type="search" name="q" 
-                           placeholder="Tìm kiếm tin tức..." required>
-                    <button class="btn btn-outline-danger" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </form>
-                
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/login">
-                            <i class="fas fa-sign-in-alt"></i> Đăng nhập
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <%@ include file="components/navigation.jsp" %>
 
     <!-- Main Content -->
     <div class="container mt-4">
