@@ -43,6 +43,6 @@
         <location>/error/500.jsp</location>
     </error-page>
     
-    <!-- Removed default servlet mapping to avoid conflict with ImageServlet -->
+   
     
 </web-app>
