@@ -22,7 +22,7 @@
 
                 /* Header */
                 .header {
-                    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                    background: linear-gradient(135deg, #c41e3a 0%, #a01729 100%)
                     color: white;
                     padding: 15px 0;
                     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -346,7 +346,7 @@
                 }
 
                 .btn-primary {
-                    background: linear-gradient(135deg, #28a745, #20c997);
+                    background: linear-gradient(135deg, #c41e3a 0%, #a01729 100%);
                     color: white;
                 }
 
